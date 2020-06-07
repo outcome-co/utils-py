@@ -1,8 +1,9 @@
-name: Check
+name: Checks
 
 on:
-  push:
-    branches-ignore:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
       - master
 
 env:
