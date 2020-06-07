@@ -149,6 +149,7 @@ clean-docs: ## Remove docs
 clean-python: ## Remove python artifacts
 	find . -name "*.pyc" -delete
 	find . -name "__pycache__" -delete
+	rm -rf dist
 
 ifeq ($(SKIP_COVERAGE), 1)
 clean-coverage:
