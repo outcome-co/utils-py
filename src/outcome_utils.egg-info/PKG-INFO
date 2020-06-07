@@ -1,0 +1,11 @@
+Metadata-Version: 1.2
+Name: outcome-utils
+Version: 0.1.0
+Summary: A collection of python utils.
+Home-page: https://github.com/outcome-co/utils-py
+Author: Douglas Willcocks
+Author-email: douglas@outcome.co
+License: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN
+Requires-Python: >=3.7,<4.0

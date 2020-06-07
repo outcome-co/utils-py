@@ -1,7 +1,13 @@
 # utils-py
-![ci-badge](https://github.com/outcome-co/utils-py/workflows/Check/badge.svg)
+![ci-badge](https://github.com/outcome-co/utils-py/workflows/Check/badge.svg) ![version-badge](https://img.shields.io/badge/version-0.1.0-brightgreen)
 
-Description TBD
+A set of python utilities.
+
+## Usage
+
+```sh
+poetry add outcome-utils
+```
 
 ## Development
 
