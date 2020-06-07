@@ -23,7 +23,7 @@ def is_dev() -> bool:
 
 
 def is_test() -> bool:
-    return env() == _test_key or is_integration()
+    return env() == _test_key
 
 
 def is_integration() -> bool:

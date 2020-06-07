@@ -34,7 +34,7 @@ class TestEnv:
     def test_is_integration(self):
         assert not env.is_dev()
         assert not env.is_prod()
-        assert env.is_test()
+        assert not env.is_test()
         assert env.is_integration()
 
     @patch.dict('os.environ', {'APP_ENV': 'production'})
