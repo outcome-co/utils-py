@@ -54,4 +54,4 @@ jobs:
         - name: "Publish package"
           run: make publish
           env:
-            POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
+            POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_REGISTRY_TOKEN }}
