@@ -8,6 +8,11 @@ class TestEnv:
     def test_env_in_os_environ(self):
         assert env.env() == 'env_for_unittest'
 
+    @patch.dict('os.environ', {'APP_ENV': ' dev '})
+    def test_env_with_white_space(self):
+        assert env.env() == 'dev'
+        assert env.is_dev()
+
     # We use clear=True to empty the dict
     @patch.dict('os.environ', {}, clear=True)
     def test_env_default_value(self):

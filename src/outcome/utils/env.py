@@ -14,7 +14,7 @@ _prod_key = 'production'
 
 def env() -> str:
     if _env_key in os.environ:
-        return cast(str, os.environ.get(_env_key))
+        return cast(str, os.environ.get(_env_key)).strip()
     return _dev_key
 
 
