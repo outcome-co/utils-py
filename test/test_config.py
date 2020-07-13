@@ -43,6 +43,16 @@ class TestGet:
             mocked_get_config.return_value = some_config
             assert conf.get('config_key') == some_config['config_key']
 
+    @patch.dict('os.environ', {}, clear=True)
+    def test_get_from_file_twice(self, some_config):
+        conf = config.Config('some_file')
+
+        with patch.object(conf, 'get_config', autospec=True) as mocked_get_config:
+            mocked_get_config.return_value = some_config
+            assert conf.get('config_key') == some_config['config_key']
+            assert conf.get('config_key') == some_config['config_key']
+            mocked_get_config.assert_called_once()
+
 
 @skip_for_integration
 class TestGetConfig:

@@ -1,4 +1,4 @@
-"""TOML file config management."""
+"""Config helper."""
 
 import os
 from pathlib import Path
@@ -12,12 +12,53 @@ ConfigDict = Dict[str, ValidConfigType]
 
 
 class Config:  # pragma: only-covered-in-unit-tests
+    """This class helps with retrieving config values from a project environment.
+
+    You can provide a path to a TOML file, typically the pyproject.toml, or just
+    let the class try to extract the values from environment variables.
+
+    Environment variables will always take precedence over the values found in the file.
+
+    The keys from the TOML file will be flattened and transformed to uppercase, following
+    environment variable conventions.
+
+    For example:
+
+    ```toml
+    [app]
+    port = 80
+    ```
+
+    Will be transformed into
+
+    ```py
+    {
+        'APP_PORT': 80
+    }
+    ```
+    """
 
     path: Optional[ValidPath]
     config: Optional[ConfigDict]
     aliases: Optional[Dict[str, str]]
 
-    def __init__(self, path: Optional[ValidPath] = None, aliases: Optional[Dict[str, str]] = None):
+    def __init__(self, path: Optional[ValidPath] = None, aliases: Optional[Dict[str, str]] = None) -> None:
+        """Initialize the class with an optional config file and set of aliases.
+
+        The aliases dict will rewrite config keys from key to value:
+
+        ```
+        aliases = {'ORIGINAL_KEY': 'NEW_KEY'}
+        config = Config('some_file.toml', aliases)
+
+        config.get('ORIGINAL_KEY')  # -> raises KeyError
+        config.get('NEW_KEY')  # -> returns value
+        ```
+
+        Arguments:
+            path (ValidPath, optional): The path to the config file.
+            aliases (Dict[str, str], optional): The aliasing dict.
+        """
         self.path = path
         self.config = None
         self.aliases = aliases
@@ -26,8 +67,9 @@ class Config:  # pragma: only-covered-in-unit-tests
         if key in os.environ:
             return cast(str, os.environ.get(key))
 
-        if self.path and not self.config:
-            self.config = self.get_config(self.path, self.aliases)
+        if self.path:
+            if not self.config:
+                self.config = self.get_config(self.path, self.aliases)
             return self.config[key]
 
         raise KeyError(key)
