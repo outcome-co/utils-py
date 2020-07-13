@@ -62,6 +62,7 @@ exclude = '''
 
 [tool.isort]
 skip_glob = "*/.cache/**/*"
+line_length = 130
 
 [tool.commitizen]
 name = "cz_conventional_commits"

@@ -10,6 +10,16 @@ __all__ = ['get_init_args']
 Class = TypeVar('Class', bound=object)
 
 
+def get_all_subclasses(cls):
+    all_subclasses = []
+
+    for subclass in cls.__subclasses__():
+        all_subclasses.append(subclass)
+        all_subclasses.extend(get_all_subclasses(subclass))
+
+    return all_subclasses
+
+
 def get_init_args(cls: Class) -> Set[str]:
     # Get the list of classes that the original_field herits from
     original_tree_class = getclasstree([cls], unique=True)

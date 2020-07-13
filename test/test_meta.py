@@ -1,5 +1,5 @@
 import pytest
-from outcome.utils.meta import _flatten_list_of_types, get_init_args
+from outcome.utils.meta import _flatten_list_of_types, get_all_subclasses, get_init_args
 
 
 def test_flatten_with_correct_list_of_types():
@@ -28,5 +28,13 @@ class Child(Parent):
         ...
 
 
+class Grandchild(Child):
+    ...
+
+
 def test_get_init_args():
     assert get_init_args(Child) == {'a', 'b'}
+
+
+def test_get_subclasses():
+    assert set(get_all_subclasses(Parent)) == {Child, Grandchild}
