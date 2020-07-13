@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "outcome-utils"
-version = "3.0.1"
+version = "3.1.0"
 description = "A collection of python utils."
 authors = ["Douglas Willcocks <douglas@outcome.co>"]
 license = "ISC"
@@ -66,7 +66,7 @@ line_length = 130
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "3.0.1"
+version = "3.1.0"
 tag_format = "v$version"
 bump_message = "chore(version): $current_version → $new_version"
 version_files = ["pyproject.toml:version", "README.md:version-badge"]
