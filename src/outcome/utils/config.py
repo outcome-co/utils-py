@@ -42,7 +42,12 @@ class Config:  # pragma: only-covered-in-unit-tests
     config: Optional[ConfigDict]
     aliases: Optional[Dict[str, str]]
 
-    def __init__(self, path: Optional[ValidPath] = None, aliases: Optional[Dict[str, str]] = None) -> None:
+    def __init__(
+        self,
+        path: Optional[ValidPath] = None,
+        aliases: Optional[Dict[str, str]] = None,
+        defaults: Optional[Dict[str, ValidConfigType]] = None,
+    ) -> None:
         """Initialize the class with an optional config file and set of aliases.
 
         The aliases dict will rewrite config keys from key to value:
@@ -55,13 +60,17 @@ class Config:  # pragma: only-covered-in-unit-tests
         config.get('NEW_KEY')  # -> returns value
         ```
 
+        The defaults dict is the final fallback.
+
         Arguments:
             path (ValidPath, optional): The path to the config file.
             aliases (Dict[str, str], optional): The aliasing dict.
+            defaults (Dict[str, ValidConfigType], optional): A dict of hardcoded values
         """
         self.path = path
         self.config = None
         self.aliases = aliases
+        self.defaults = (defaults or {}).copy()
 
     def get(self, key: str) -> ValidConfigType:
         if key in os.environ:
@@ -70,9 +79,10 @@ class Config:  # pragma: only-covered-in-unit-tests
         if self.path:
             if not self.config:
                 self.config = self.get_config(self.path, self.aliases)
-            return self.config[key]
+            if key in self.config:
+                return self.config[key]  # noqa: WPS529
 
-        raise KeyError(key)
+        return self.defaults[key]
 
     @classmethod
     def get_config(cls, path: ValidPath, aliases: Dict[str, str] = None) -> Dict[str, ValidConfigType]:

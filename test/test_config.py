@@ -36,12 +36,26 @@ class TestGet:
             conf.get('env_key')
 
     @patch.dict('os.environ', {}, clear=True)
+    def test_get_key_from_defaults(self):
+        conf = config.Config(defaults={'env_key': 'env_value'})
+        assert conf.get('env_key') == 'env_value'
+
+    @patch.dict('os.environ', {}, clear=True)
     def test_get_from_file(self, some_config):
         conf = config.Config('some_file')
 
         with patch.object(conf, 'get_config', autospec=True) as mocked_get_config:
             mocked_get_config.return_value = some_config
             assert conf.get('config_key') == some_config['config_key']
+
+    @patch.dict('os.environ', {}, clear=True)
+    def test_get_from_file_with_defaults(self, some_config):
+        conf = config.Config('some_file', defaults={'env_key': 'env_value'})
+
+        with patch.object(conf, 'get_config', autospec=True) as mocked_get_config:
+            mocked_get_config.return_value = some_config
+            assert 'env_key' not in some_config
+            assert conf.get('env_key') == 'env_value'
 
     @patch.dict('os.environ', {}, clear=True)
     def test_get_from_file_twice(self, some_config):
