@@ -3,7 +3,7 @@
 import sys
 import traceback
 from contextlib import contextmanager
-from typing import IO, Generator, List, Optional
+from typing import IO, Generator, List, Optional, Union
 
 import colored
 from colored import stylize
@@ -26,6 +26,11 @@ _task_failed = 'Task Failed'
 
 # Default
 _bullet = '•'
+
+_raise = 'raise'
+_print = 'print'
+_exit = 'exit'
+_print_and_exit = 'print_and_exit'
 
 
 def bold_red(message: str) -> str:
@@ -50,22 +55,33 @@ class Status:
     def __init__(self) -> None:
         self.completed = False
 
-    def failure(self, message: Optional[str] = None) -> None:
+    def failure(self, message: Optional[str] = None, detail: Optional[str] = None) -> None:
         """Indicate that the task failed.
 
         Args:
             message (str, optional): The optional error message to display.
+            detail (str, optional): Optional detail to appear under the task status.
         """
         self._mark_as_completed()
         failure(_failure)
 
+        if detail:
+            quiet(detail)
+
         if message:
             error(message)
 
-    def success(self) -> None:
-        """Indicate that the task succeeded."""
+    def success(self, detail: Optional[str] = None) -> None:
+        """Indicate that the task succeeded.
+
+        Args:
+            detail (str, optional): Optional detail to appear under the task status.
+        """
         self._mark_as_completed()
         success(_success)
+
+        if detail:
+            quiet(detail)
 
     def _mark_as_completed(self) -> None:
         """Mark the task as completed.
@@ -85,8 +101,20 @@ def critical_task(label: str, max_width: int = 80) -> Generator[Status, None, No
         yield status
 
 
+def completed_task(
+    label: str, result: Union[bool, Exception], max_width: int = 80, exc: str = _raise, detail: Optional[str] = None,
+):
+    with task(label, max_width=max_width, exc=exc) as status:
+        if isinstance(result, Exception):
+            raise result
+        elif result:
+            status.success(detail=detail)
+        else:
+            status.failure(detail=detail)
+
+
 @contextmanager
-def task(label: str, max_width: int = 80, exc: str = 'raise') -> Generator[Status, None, None]:  # noqa: WPS231
+def task(label: str, max_width: int = 80, exc: str = _raise) -> Generator[Status, None, None]:  # noqa: WPS231,WPS213
     """Print a task's name, followed by its outcome.
 
     The outcome of the task is provided by called the `success` or `failure`
@@ -120,7 +148,7 @@ def task(label: str, max_width: int = 80, exc: str = 'raise') -> Generator[Statu
                 status.failure()
         ```
     """
-    assert exc in {'raise', 'print', 'exit', 'print_and_exit'}  # noqa: S101
+    assert exc in {_raise, _print, _exit, _print_and_exit}  # noqa: S101
 
     dim_dots = stylize('.' * (max_width - len(label)), colored.attr(_dim))
     bold_label = stylize(label, colored.attr(_bold))
@@ -135,11 +163,11 @@ def task(label: str, max_width: int = 80, exc: str = 'raise') -> Generator[Statu
         if not work_status.completed:
             work_status.failure()
 
-        if exc == 'raise':
+        if exc == _raise:
             raise ex
-        elif exc == 'print':
+        elif exc == _print:
             error(_task_failed)
-        elif exc == 'exit':
+        elif exc == _exit:
             fail()
         else:
             fail(_task_failed)

@@ -21,6 +21,11 @@ def message():
 
 
 @pytest.fixture(scope='session')
+def detail():
+    return 'detail'
+
+
+@pytest.fixture(scope='session')
 def task():
     return 'task'
 
@@ -216,6 +221,78 @@ class TestTasks:
 
         assert basic_err[0].startswith(console._error)
         assert basic_err[0].endswith(message)
+
+    def test_controlled_failure_with_message_and_detail(self, capfd, task, message, detail):  # noqa: WPS218
+        with mock.patch.object(console, 'failure', wraps=console.failure) as failure:
+            with console.task(task) as status:
+                status.failure(message, detail=detail)
+
+            failure.assert_called_once()
+
+        captured = capfd.readouterr()
+        basic_lines = strip_color(captured.out).split('\n')
+        basic_err = strip_color(captured.err).split('\n')
+
+        assert basic_lines[0].startswith(task)
+        assert basic_lines[0].endswith(console._failure)
+        assert basic_lines[1].startswith(detail)
+        assert basic_lines[1].endswith(detail)
+
+        assert basic_err[0].startswith(console._error)
+        assert basic_err[0].endswith(message)
+
+    def test_controlled_success_with_detail(self, capfd, task, detail):
+        with mock.patch.object(console, 'success', wraps=console.success) as success:
+            with console.task(task) as status:
+                status.success(detail=detail)
+
+            success.assert_called_once()
+
+        captured = capfd.readouterr()
+        basic_lines = strip_color(captured.out).split('\n')
+
+        assert basic_lines[0].startswith(task)
+        assert basic_lines[0].endswith(console._success)
+        assert basic_lines[1].startswith(detail)
+        assert basic_lines[1].endswith(detail)
+
+    def test_shortcut_success(self, capfd, task, detail):
+        with mock.patch.object(console, 'success', wraps=console.success) as success:
+            console.completed_task(task, result=True, detail=detail)
+            success.assert_called_once()
+
+        captured = capfd.readouterr()
+        basic_lines = strip_color(captured.out).split('\n')
+
+        assert basic_lines[0].startswith(task)
+        assert basic_lines[0].endswith(console._success)
+        assert basic_lines[1].startswith(detail)
+        assert basic_lines[1].endswith(detail)
+
+    def test_shortcut_failure(self, capfd, task, detail):  # noqa: WPS218
+        with mock.patch.object(console, 'failure', wraps=console.failure) as failure:
+            console.completed_task(task, result=False, detail=detail)
+            failure.assert_called_once()
+
+        captured = capfd.readouterr()
+        basic_lines = strip_color(captured.out).split('\n')
+
+        assert basic_lines[0].startswith(task)
+        assert basic_lines[0].endswith(console._failure)
+        assert basic_lines[1].startswith(detail)
+        assert basic_lines[1].endswith(detail)
+
+    def test_shortcut_exception(self, capfd, task):  # noqa: WPS218
+        with mock.patch.object(console, 'failure', wraps=console.failure) as failure:
+            with pytest.raises(Exception):
+                console.completed_task(task, result=Exception())
+            failure.assert_called_once()
+
+        captured = capfd.readouterr()
+        basic_lines = strip_color(captured.out).split('\n')
+
+        assert basic_lines[0].startswith(task)
+        assert basic_lines[0].endswith(console._failure)
 
     def test_width(self, capfd, task):
         for i in range(1, 3):
