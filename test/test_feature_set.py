@@ -3,8 +3,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-from outcome.utils.config import Config
-from outcome.utils.feature_set import FeatureException, FeatureSet, is_valid_feature_name
+from outcome.utils.config import Config, FeatureException, FeatureSet, is_valid_feature_name
 
 valid_feature_names_raw = [
     'feature',
@@ -97,11 +96,10 @@ def config():
 
 
 @pytest.fixture()
-def feature_set_with_config(config):
-    fs = FeatureSet(config)
-    fs.register_feature('my_active_feature')
-    fs.register_feature('my_inactive_feature')
-    return fs
+def feature_set_with_config(config: Config):
+    config.feature_set.register_feature('my_active_feature')
+    config.feature_set.register_feature('my_inactive_feature')
+    return config.feature_set
 
 
 @patch.dict(os.environ, {}, clear=True)
