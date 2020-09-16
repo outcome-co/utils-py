@@ -1,0 +1,4 @@
+[with_feat]
+my_active_feature = false
+my_inactive_feature = true
+unknown_feature = true

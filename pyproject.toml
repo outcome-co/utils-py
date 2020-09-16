@@ -26,7 +26,7 @@ outcome-devkit = "^3.0.1"
 [tool.coverage.run]
 branch = true
 data_file = 'coverage/data'
-source = ['src']
+source = ['src/outcome/utils']
 omit = [
    "test/*"
 ]
