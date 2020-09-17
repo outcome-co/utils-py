@@ -11,4 +11,7 @@ updates:
   schedule:
     interval: daily
     time: '04:00'
+  commit-message:
+    prefix: 'fix(deps): '
+    prefix-development: 'chore(deps): '
   open-pull-requests-limit: 10
