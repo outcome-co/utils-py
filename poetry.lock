@@ -676,7 +676,7 @@ description = "A package containing common dev dependencies for python projects.
 name = "outcome-devkit"
 optional = false
 python-versions = ">=3.8,<4.0"
-version = "3.0.1"
+version = "3.0.2"
 
 [package.dependencies]
 black = ">=19.10b0,<20.0"
@@ -696,10 +696,10 @@ ipython = ">=7.13.0,<8.0.0"
 isort = ">=4.3.21,<5.0.0"
 mock = ">=4.0.2,<5.0.0"
 mypy = ">=0.780,<0.783"
-outcome-utils = ">=3.1.0,<4.0.0"
+outcome-utils = ">=4.0.0,<5.0.0"
 pdbpp = ">=0.10.2,<0.11.0"
 pre-commit = ">=2.2.0,<3.0.0"
-pytest = ">=5.3.5,<6.0.0"
+pytest = ">=5.3.5,<7.0.0"
 pytest-asyncio = ">=0.12,<0.15"
 wemake-python-styleguide = ">=0.14.0,<0.15.0"
 
@@ -1137,7 +1137,7 @@ python-versions = "*"
 version = "0.3"
 
 [metadata]
-content-hash = "5cdaf453cef8e8168384e4b40e96a40f6dbf969e9de7eadc4375810a991bbe17"
+content-hash = "6ba37bb7edc2efd77649206e187207a864d854fe163510a651eb911513db2de2"
 lock-version = "1.0"
 python-versions = "^3.8"
 
@@ -1447,10 +1447,11 @@ mypy-extensions = [
 ]
 nodeenv = [
     {file = "nodeenv-1.4.0-py2.py3-none-any.whl", hash = "sha256:4b0b77afa3ba9b54f4b6396e60b0c83f59eaeb2d63dc3cc7a70f7f4af96c82bc"},
+    {file = "nodeenv-1.4.0.tar.gz", hash = "sha256:26941644654d8dd5378720e38f62a3bac5f9240811fb3b8913d2663a17baa91c"},
 ]
 outcome-devkit = [
-    {file = "outcome-devkit-3.0.1.tar.gz", hash = "sha256:f93ebac27d74f2eb7145430844282bae32d8a24494403740972f3d620467068a"},
-    {file = "outcome_devkit-3.0.1-py3-none-any.whl", hash = "sha256:ba687258b2e08285a55cb5adf6ae9d6a6f2ee56b617efa9e63638697478d2d98"},
+    {file = "outcome-devkit-3.0.2.tar.gz", hash = "sha256:f968e8fd1cc86a016da399821b3dcd97f318a1f6c2038c10e63287dbf320c6a8"},
+    {file = "outcome_devkit-3.0.2-py3-none-any.whl", hash = "sha256:756f242aa9843eb73edf95f1b516c05cede011e1ecadb515ad193ba0e1ed8c99"},
 ]
 packaging = [
     {file = "packaging-20.4-py2.py3-none-any.whl", hash = "sha256:998416ba6962ae7fbd6596850b80e17859a5753ba17c32284f67bfff33784181"},
