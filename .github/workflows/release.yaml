@@ -40,13 +40,20 @@ jobs:
           uses: actions/cache@v2
           with:
             path: ${{ env.PIP_CACHE_DIR }}
-            key: pip-${{ hashFiles('**/pyproject.toml') }}
+            # Pip is only used to install poetry, and the poetry version 
+            # is stored in pyproject.toml
+            key: pip-${{ hashFiles('**/poetry.lock') }}
+            restore-keys: |
+              pip
 
         - name: Configure poetry cache
           uses: actions/cache@v2
           with:
             path: ${{ env.POETRY_CACHE_DIR }}
-            key: poetry-${{ hashFiles('**/pyproject.toml') }}
+            # All of the dependencies are stored in pyproject.toml
+            key: poetry-${{ hashFiles('**/poetry.lock') }}
+            restore-keys: |
+              poetry
 
         - name: "Install build system"
           run: make install-build-system
