@@ -173,3 +173,20 @@ def test_is_active_from_env():
 def test_is_active_from_toml():
     feature_set.set_config(feature_config)
     assert feature_set.is_active(default_feature)
+
+
+@patch.dict(os.environ, {'APP_ENV': 'dev'}, clear=True)
+def test_set_unknown_feature():
+    with warnings.catch_warnings(record=True) as w:
+        assert not feature_set.is_active(unknown_feature)
+        feature_set.set_feature_default(unknown_feature, default_state=True)
+        assert len(w) > 0
+        assert feature_set.is_active(unknown_feature)
+
+
+@patch.dict(os.environ, {}, clear=True)
+@pytest.mark.usefixtures('register_feature')
+def test_set_known_feature():
+    assert not feature_set.is_active(inactive_feature)
+    feature_set.set_feature_default(inactive_feature, default_state=True)
+    assert feature_set.is_active(inactive_feature)

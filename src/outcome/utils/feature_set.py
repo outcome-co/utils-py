@@ -80,14 +80,8 @@ def display_features():  # pragma: no cover
 
 
 def is_active(feature: str) -> bool:
-    if feature not in _features:
-        if env.is_dev():
-            warnings.warn(
-                f'Checking unknown feature "{feature}", maybe you forgot to register it? This will raise an exception in production',  # noqa: E501
-                RuntimeWarning,
-            )
-            return False
-        raise FeatureException(f'Unknown feature: {feature}')
+    if not _feature_check(feature):
+        return False
 
     try:
         feature_key = _feature_to_env_key(feature)
@@ -97,3 +91,20 @@ def is_active(feature: str) -> bool:
         ...
 
     return _features[feature]
+
+
+def _feature_check(feature):
+    if feature not in _features:
+        if env.is_dev():
+            warnings.warn(
+                f'Checking unknown feature "{feature}", maybe you forgot to register it? This will raise an exception in production',  # noqa: E501
+                RuntimeWarning,
+            )
+            return False
+        raise FeatureException(f'Unknown feature: {feature}')
+    return True
+
+
+def set_feature_default(feature: str, default_state: bool) -> None:
+    _feature_check(feature)
+    _features[feature] = default_state
