@@ -18,6 +18,8 @@ jinja2 = "^2.11.2"
 colored = "^1.4.2"
 toml = "^0.10.1"
 rich = ">=6.2,<8.0"
+makefun = "^1.9.3"
+asgiref = "^3.2.10"
 
 [tool.poetry.dev-dependencies]
 pytest-asyncio = "^0.14.0"
