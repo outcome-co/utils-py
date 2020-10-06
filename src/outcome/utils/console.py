@@ -20,6 +20,7 @@ _red = 'red'
 # Messages
 _failure = 'Failure'
 _success = 'Success'
+_skipped = 'Skipped'
 _error = 'Error'
 _task_failed = 'Task Failed'
 
@@ -79,6 +80,18 @@ class Status:
         """
         self._mark_as_completed()
         success(_success)
+
+        if detail:
+            quiet(detail)
+
+    def skipped(self, detail: Optional[str] = None) -> None:
+        """Indicate that the task was skipped.
+
+        Args:
+            detail (str, optional): Optional detail to appear under the task status. Defaults to None.
+        """
+        self._mark_as_completed()
+        skipped(_skipped)
 
         if detail:
             quiet(detail)
@@ -209,6 +222,16 @@ def failure(message: str, **kwargs) -> None:
         kwargs (Any): Options passed to `write`.
     """
     write(bold_red(message), **kwargs)
+
+
+def skipped(message: str, **kwargs) -> None:
+    """Write a dimmed message.
+
+    Args:
+        message (str): The message.
+        kwargs (Any): Options passed to `write`.
+    """
+    quiet(message, **kwargs)
 
 
 def quiet(message: str, **kwargs) -> None:

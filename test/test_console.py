@@ -307,3 +307,32 @@ class TestTasks:
         for line in basic_lines:
             if line != '':
                 assert len(line) == line_len
+
+    def test_skipped(self, capfd, task):
+        with mock.patch.object(console, 'skipped', wraps=console.skipped) as skipped:
+            with console.task(task) as status:
+                1 + 1
+                status.skipped()
+
+            skipped.assert_called_once()
+
+        captured = capfd.readouterr()
+        basic = strip_color(captured.out)
+
+        assert basic.startswith(task)
+        assert basic.endswith(nl(console._skipped))
+
+    def test_controlled_skipped_with_detail(self, capfd, task, detail):
+        with mock.patch.object(console, 'skipped', wraps=console.skipped) as skipped:
+            with console.task(task) as status:
+                status.skipped(detail=detail)
+
+            skipped.assert_called_once()
+
+        captured = capfd.readouterr()
+        basic_lines = strip_color(captured.out).split('\n')
+
+        assert basic_lines[0].startswith(task)
+        assert basic_lines[0].endswith(console._skipped)
+        assert basic_lines[1].startswith(detail)
+        assert basic_lines[1].endswith(detail)
