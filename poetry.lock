@@ -698,7 +698,7 @@ description = "A package containing common dev dependencies for python projects.
 name = "outcome-devkit"
 optional = false
 python-versions = ">=3.8,<4.0"
-version = "3.0.6"
+version = "3.0.8"
 
 [package.dependencies]
 black = ">=19.10b0,<20.0"
@@ -1016,7 +1016,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "2.10.2"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "Python 2 and 3 compatibility utilities"
 name = "six"
 optional = false
@@ -1165,7 +1165,7 @@ python-versions = "*"
 version = "0.3"
 
 [metadata]
-content-hash = "75bb9e0a6c0ddc660b68169c121954ea32999dc199b32e2424436754aa9ee280"
+content-hash = "7a08fb2ae3307e628e7c906dde8f34430ee504f452dd43517d7200ee870bdacf"
 lock-version = "1.0"
 python-versions = "^3.8"
 
@@ -1486,8 +1486,8 @@ nodeenv = [
     {file = "nodeenv-1.5.0.tar.gz", hash = "sha256:ab45090ae383b716c4ef89e690c41ff8c2b257b85b309f01f3654df3d084bd7c"},
 ]
 outcome-devkit = [
-    {file = "outcome-devkit-3.0.6.tar.gz", hash = "sha256:ee462c6723c611d5d450abb2fa66b43336d63e36aeebebefaf1a58c9218c505b"},
-    {file = "outcome_devkit-3.0.6-py3-none-any.whl", hash = "sha256:65bd7cc5d866ac473c43f7bdef8a1ccc773794dc298f075f81a206db49c9d77a"},
+    {file = "outcome-devkit-3.0.8.tar.gz", hash = "sha256:ded10cef57eeb9529459ed8b30d877a7b8496b1245c3b4403593a2fe862070cd"},
+    {file = "outcome_devkit-3.0.8-py3-none-any.whl", hash = "sha256:d8800c0bf1abfaff7cd4c62da4c7845274d9a26011a64294bd7a20e34a9f293a"},
 ]
 packaging = [
     {file = "packaging-20.4-py2.py3-none-any.whl", hash = "sha256:998416ba6962ae7fbd6596850b80e17859a5753ba17c32284f67bfff33784181"},
@@ -1610,6 +1610,12 @@ regex = [
     {file = "regex-2020.9.27-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:8d69cef61fa50c8133382e61fd97439de1ae623fe943578e477e76a9d9471637"},
     {file = "regex-2020.9.27-cp38-cp38-win32.whl", hash = "sha256:f2388013e68e750eaa16ccbea62d4130180c26abb1d8e5d584b9baf69672b30f"},
     {file = "regex-2020.9.27-cp38-cp38-win_amd64.whl", hash = "sha256:4318d56bccfe7d43e5addb272406ade7a2274da4b70eb15922a071c58ab0108c"},
+    {file = "regex-2020.9.27-cp39-cp39-manylinux1_i686.whl", hash = "sha256:84cada8effefe9a9f53f9b0d2ba9b7b6f5edf8d2155f9fdbe34616e06ececf81"},
+    {file = "regex-2020.9.27-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:816064fc915796ea1f26966163f6845de5af78923dfcecf6551e095f00983650"},
+    {file = "regex-2020.9.27-cp39-cp39-manylinux2010_i686.whl", hash = "sha256:5d892a4f1c999834eaa3c32bc9e8b976c5825116cde553928c4c8e7e48ebda67"},
+    {file = "regex-2020.9.27-cp39-cp39-manylinux2010_x86_64.whl", hash = "sha256:c9443124c67b1515e4fe0bb0aa18df640965e1030f468a2a5dc2589b26d130ad"},
+    {file = "regex-2020.9.27-cp39-cp39-win32.whl", hash = "sha256:49f23ebd5ac073765ecbcf046edc10d63dcab2f4ae2bce160982cb30df0c0302"},
+    {file = "regex-2020.9.27-cp39-cp39-win_amd64.whl", hash = "sha256:3d20024a70b97b4f9546696cbf2fd30bae5f42229fbddf8661261b1eaff0deb7"},
     {file = "regex-2020.9.27.tar.gz", hash = "sha256:a6f32aea4260dfe0e55dc9733ea162ea38f0ea86aa7d0f77b15beac5bf7b369d"},
 ]
 restructuredtext-lint = [
