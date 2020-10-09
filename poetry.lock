@@ -44,14 +44,6 @@ version = "0.8.1"
 
 [[package]]
 category = "dev"
-description = "Enhance the standard unittest package with features for testing asyncio libraries"
-name = "asynctest"
-optional = false
-python-versions = ">=3.5"
-version = "0.13.0"
-
-[[package]]
-category = "dev"
 description = "Atomic file writes."
 marker = "sys_platform == \"win32\""
 name = "atomicwrites"
@@ -1190,7 +1182,7 @@ python-versions = "*"
 version = "0.3"
 
 [metadata]
-content-hash = "19baca50127ad0af5fe305fa45f69504650b36f618b4e6df36b8c48d5055d08f"
+content-hash = "715a7bb7343b83566f11a4c94ae3101e3963f8f6f04b0370f3400adf6e943aa6"
 lock-version = "1.0"
 python-versions = "^3.8"
 
@@ -1214,10 +1206,6 @@ asgiref = [
 astor = [
     {file = "astor-0.8.1-py2.py3-none-any.whl", hash = "sha256:070a54e890cefb5b3739d19f30f5a5ec840ffc9c50ffa7d23cc9fc1a38ebbfc5"},
     {file = "astor-0.8.1.tar.gz", hash = "sha256:6a6effda93f4e1ce9f618779b2dd1d9d84f1e32812c23a29b3fff6fd7f63fa5e"},
-]
-asynctest = [
-    {file = "asynctest-0.13.0-py3-none-any.whl", hash = "sha256:5da6118a7e6d6b54d83a8f7197769d046922a44d2a99c21382f0a6e4fadae676"},
-    {file = "asynctest-0.13.0.tar.gz", hash = "sha256:c27862842d15d83e6a34eb0b2866c323880eb3a75e4485b079ea11748fd77fac"},
 ]
 atomicwrites = [
     {file = "atomicwrites-1.4.0-py2.py3-none-any.whl", hash = "sha256:6d1784dea7c0c8d4a5172b6c620f40b6e4cbfdf96d783691f2e1302a7b88e197"},

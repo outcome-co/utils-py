@@ -1,6 +1,5 @@
 from unittest.mock import patch
 
-import asynctest
 import pytest
 from dogpile.cache.api import NO_VALUE
 from outcome.utils import cache
@@ -8,7 +7,7 @@ from outcome.utils import cache
 test = 'test'
 
 
-class TestAsyncCache(asynctest.TestCase):
+class TestAsyncCache:
     region = cache.get_cache_region()
     cache.configure_cache_region(region, settings={}, prefix=test)
 
@@ -21,11 +20,13 @@ class TestAsyncCache(asynctest.TestCase):
     async def cacheable_async_func(self):
         return test
 
+    @pytest.mark.asyncio
     async def test_cache_async_success(self):
         f = self.cacheable_async_func()
         assert await f == test
         assert await f == test
 
+    @pytest.mark.asyncio
     async def test_cache_async_fail(self):
         f = self.non_cacheable_async_func()
         assert await f == test
