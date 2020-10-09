@@ -21,11 +21,14 @@ rich = ">=6.2,<9.0"
 semver = "^2.10.2"
 makefun = "^1.9.3"
 asgiref = "^3.2.10"
+"dogpile.cache" = "^1.0.2"
+cachetools = "^4.1.1"
 
 [tool.poetry.dev-dependencies]
 pytest-asyncio = "^0.14.0"
 ansicolors = "^1.1.8"
 outcome-devkit = "^3.0.10"
+asynctest = "^0.13.0"
 
 [tool.poetry.scripts]
 otc-utils = 'outcome.utils.bin.otc_utils:main'
