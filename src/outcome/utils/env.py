@@ -66,3 +66,12 @@ def is_google_cloud() -> bool:
         _is_google_cloud = False  # noqa: WPS432,WPS121,WPS122,WPS442
 
     return _is_google_cloud  # noqa: WPS432,WPS121,WPS122,WPS442,R504
+
+
+# We don't try to test this
+def is_ipython() -> bool:  # pragma: no cover
+    try:
+        __IPYTHON__
+        return True
+    except NameError:
+        return False
