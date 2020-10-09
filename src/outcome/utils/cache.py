@@ -2,6 +2,7 @@
 
 import asyncio
 import hashlib
+import warnings
 from typing import Any, Dict
 
 from cachetools import TTLCache
@@ -19,12 +20,16 @@ class CoroutineCache:
         self.lock = asyncio.Lock()
 
     def __await__(self):  # noqa: WPS611 - `yield` magic method usage
-        with (yield from self.lock):
-            if self.done:
+        # We catch the warnings here because this is a sync function
+        # and we can't use `async with self.lock`
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', category=DeprecationWarning)
+            with (yield from self.lock):
+                if self.done:
+                    return self.result
+                self.result = yield from self.co.__await__()  # noqa: WPS609 - direct magic attribute usage
+                self.done = True
                 return self.result
-            self.result = yield from self.co.__await__()  # noqa: WPS609 - direct magic attribute usage
-            self.done = True
-            return self.result
 
 
 def cache_async(f):

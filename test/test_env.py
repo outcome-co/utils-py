@@ -1,6 +1,13 @@
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
+import pytest
+import requests
 from outcome.utils import env
+
+
+@pytest.fixture(autouse=True)
+def reset_is_google_state():
+    env._is_google_cloud = None
 
 
 class TestEnv:
@@ -48,3 +55,33 @@ class TestEnv:
         assert env.is_prod()
         assert not env.is_test()
         assert not env.is_integration()
+
+    @patch('outcome.utils.env.requests.get', autospec=True)
+    def test_is_google_cloud(self, mocked_requests_get):
+        mocked_response = Mock()
+        mocked_response.status_code = 200
+        mocked_requests_get.return_value = mocked_response
+        assert env.is_google_cloud()
+
+    @patch('outcome.utils.env.requests.get', autospec=True)
+    def test_is_google_cloud_cached(self, mocked_requests_get: Mock):
+        mocked_response = Mock()
+        mocked_response.status_code = 200
+        mocked_requests_get.return_value = mocked_response
+
+        assert env.is_google_cloud()
+        assert env.is_google_cloud()
+        mocked_requests_get.assert_called_once()
+
+    @patch('outcome.utils.env.requests.get', autospec=True)
+    def test_is_google_cloud_404(self, mocked_requests_get):  # noqa: WPS114
+        mocked_response = Mock()
+        mocked_response.status_code = 404
+        mocked_requests_get.return_value = mocked_response
+        assert not env.is_google_cloud()
+
+    @patch('outcome.utils.env.requests.get', autospec=True)
+    @pytest.mark.parametrize('exception', [requests.exceptions.Timeout, requests.exceptions.ConnectionError])
+    def test_is_google_cloud_exception(self, mocked_requests_get, exception):
+        mocked_requests_get.side_effect = exception
+        assert not env.is_google_cloud()
