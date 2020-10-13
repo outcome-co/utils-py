@@ -85,3 +85,10 @@ class TestEnv:
     def test_is_google_cloud_exception(self, mocked_requests_get, exception):
         mocked_requests_get.side_effect = exception
         assert not env.is_google_cloud()
+
+    def test_is_pytest(self):
+        assert env.is_pytest()
+
+    @patch.dict('os.environ', {}, clear=True)
+    def test_is_pytest_no_env(self):
+        assert env.is_pytest()

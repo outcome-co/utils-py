@@ -1,6 +1,7 @@
 """Environment information."""
 
 import os
+import traceback
 from typing import cast
 
 import requests
@@ -75,3 +76,17 @@ def is_ipython() -> bool:  # pragma: no cover
         return True
     except NameError:
         return False
+
+
+# This isn't an exact science, but we can try!
+def is_pytest() -> bool:
+    # Shortcut that only works when you're actually in a test
+    if 'PYTEST_CURRENT_TEST' in os.environ:
+        return True
+
+    for frame in traceback.extract_stack():  # pragma: no cover
+        # The pytest can appear as `site-packages/_pytest` or `site-packages/pytest`
+        if 'site-packages' in frame.filename and 'pytest' in frame.filename:
+            return True
+
+    return False  # pragma: no cover
