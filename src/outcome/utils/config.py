@@ -72,7 +72,7 @@ class Config:  # pragma: only-covered-in-unit-tests
         self.aliases = aliases
         self.defaults = (defaults or {}).copy()
 
-    def get(self, key: str) -> ValidConfigType:
+    def get(self, key: str, default: Optional[ValidConfigType] = None) -> ValidConfigType:
         if key in os.environ:
             return cast(str, os.environ.get(key))
 
@@ -82,7 +82,12 @@ class Config:  # pragma: only-covered-in-unit-tests
             if key in self.config:
                 return self.config[key]  # noqa: WPS529
 
-        return self.defaults[key]
+        try:
+            return self.defaults[key]
+        except KeyError as exc:
+            if default:
+                return default
+            raise exc
 
     @classmethod
     def get_config(cls, path: ValidPath, aliases: Dict[str, str] = None) -> Dict[str, ValidConfigType]:

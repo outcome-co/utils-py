@@ -67,6 +67,12 @@ class TestGet:
             assert conf.get('config_key') == some_config['config_key']
             mocked_get_config.assert_called_once()
 
+    @patch.dict('os.environ', {}, clear=True)
+    def test_get_default(self):
+        conf = config.Config()
+
+        assert conf.get('bad_key', 'default') == 'default'
+
 
 @skip_for_integration
 class TestGetConfig:
