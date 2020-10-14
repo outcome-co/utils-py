@@ -11,6 +11,13 @@ ValidConfigType = Union[str, int, float, bool]
 ConfigDict = Dict[str, ValidConfigType]
 
 
+class Sentinel:
+    ...
+
+
+NO_DEFAULT = Sentinel()
+
+
 class Config:  # pragma: only-covered-in-unit-tests
     """This class helps with retrieving config values from a project environment.
 
@@ -72,7 +79,7 @@ class Config:  # pragma: only-covered-in-unit-tests
         self.aliases = aliases
         self.defaults = (defaults or {}).copy()
 
-    def get(self, key: str, default: Optional[ValidConfigType] = None) -> ValidConfigType:
+    def get(self, key: str, default: Optional[Union[ValidConfigType, Sentinel]] = NO_DEFAULT) -> ValidConfigType:
         if key in os.environ:
             return cast(str, os.environ.get(key))
 
@@ -85,7 +92,7 @@ class Config:  # pragma: only-covered-in-unit-tests
         try:
             return self.defaults[key]
         except KeyError as exc:
-            if default:
+            if default != NO_DEFAULT:
                 return default
             raise exc
 

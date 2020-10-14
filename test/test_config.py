@@ -73,6 +73,12 @@ class TestGet:
 
         assert conf.get('bad_key', 'default') == 'default'
 
+    @patch.dict('os.environ', {}, clear=True)
+    def test_get_default_none(self):
+        conf = config.Config()
+
+        assert conf.get('bad_key', None) is None
+
 
 @skip_for_integration
 class TestGetConfig:
