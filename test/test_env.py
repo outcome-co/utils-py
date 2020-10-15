@@ -27,6 +27,7 @@ class TestEnv:
         assert not env.is_prod()
         assert not env.is_test()
         assert not env.is_integration()
+        assert not env.is_e2e()
 
     @patch.dict('os.environ', {'APP_ENV': 'dev'})
     def test_is_dev(self):
@@ -34,6 +35,7 @@ class TestEnv:
         assert not env.is_prod()
         assert not env.is_test()
         assert not env.is_integration()
+        assert not env.is_e2e()
 
     @patch.dict('os.environ', {'APP_ENV': 'test'})
     def test_is_test(self):
@@ -41,6 +43,7 @@ class TestEnv:
         assert not env.is_prod()
         assert env.is_test()
         assert not env.is_integration()
+        assert not env.is_e2e()
 
     @patch.dict('os.environ', {'APP_ENV': 'integration'})
     def test_is_integration(self):
@@ -48,6 +51,15 @@ class TestEnv:
         assert not env.is_prod()
         assert not env.is_test()
         assert env.is_integration()
+        assert not env.is_e2e()
+
+    @patch.dict('os.environ', {'APP_ENV': 'e2e'})
+    def test_is_e2e(self):
+        assert not env.is_dev()
+        assert not env.is_prod()
+        assert not env.is_test()
+        assert not env.is_integration()
+        assert env.is_e2e()
 
     @patch.dict('os.environ', {'APP_ENV': 'production'})
     def test_is_prod(self):
@@ -55,6 +67,7 @@ class TestEnv:
         assert env.is_prod()
         assert not env.is_test()
         assert not env.is_integration()
+        assert not env.is_e2e()
 
     @patch('outcome.utils.env.requests.get', autospec=True)
     def test_is_google_cloud(self, mocked_requests_get):

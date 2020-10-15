@@ -12,6 +12,7 @@ _env_key = 'APP_ENV'
 _dev_key = 'dev'
 _test_key = 'test'
 _integration_key = 'integration'
+_e2e_key = 'e2e'
 _prod_key = 'production'
 
 
@@ -31,6 +32,10 @@ def is_test() -> bool:
 
 def is_integration() -> bool:
     return env() == _integration_key
+
+
+def is_e2e() -> bool:
+    return env() == _e2e_key
 
 
 def is_prod() -> bool:
