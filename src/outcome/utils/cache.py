@@ -2,7 +2,9 @@
 
 import asyncio
 import hashlib
+import pickle  # noqa: S403
 import warnings
+from pathlib import Path
 from typing import Any, Dict
 
 from cachetools import TTLCache
@@ -117,17 +119,42 @@ def configure_cache_region(cache_region: CacheRegion, settings: Dict[str, Any], 
 
 
 class TTLBackend(CacheBackend):
+    _cache_path = 'cache_path'
+
     def __init__(self, arguments):
+
+        self.persisted_cache_path = arguments.pop(self._cache_path, None)
         self.cache = TTLCache(**arguments)
+
+        if self.persisted_cache_path:
+            Path(self.persisted_cache_path).parent.mkdir(parents=True, exist_ok=True)
+
+            try:
+                # If we find a cache file and no argument was modified, then we retrieve the cache in file
+                with open(self.persisted_cache_path, 'rb') as f:
+                    pickled_cache = pickle.load(f)  # noqa: S301 - pickle usage
+                    if all(getattr(self.cache, arg_key) == getattr(pickled_cache, arg_key) for arg_key in arguments.keys()):
+                        self.cache = pickled_cache  # noqa: WPS220 - deep nesting
+
+            except FileNotFoundError:
+                pass
 
     def get(self, key):
         return self.cache.get(key, NO_VALUE)
 
     def set(self, key, value):  # noqa: WPS125, A003
         self.cache[key] = value
+        if self.persisted_cache_path:
+            self.persist_cache()
 
     def delete(self, key):
         self.cache.pop(key)
+        if self.persisted_cache_path:
+            self.persist_cache()
+
+    def persist_cache(self):
+        with open(self.persisted_cache_path, 'wb') as f:
+            pickle.dump(self.cache, f)
 
 
 register_backend(_default_cache_backend, __name__, TTLBackend.__name__)
