@@ -108,7 +108,7 @@ class Config:  # pragma: only-covered-in-unit-tests
         return config_flattened
 
 
-def flatten_keys(value: Any, key: Optional[str] = None, upper_keys: bool = True) -> Dict[str, Any]:
+def flatten_keys(value: Any, key: Optional[str] = None, upper_keys: bool = True) -> Dict[str, Any]:  # noqa: WPS231 - complexity
     if not isinstance(value, dict):
         if not key:
             raise Exception('Value cannot be a non-dict without a key')
@@ -120,7 +120,7 @@ def flatten_keys(value: Any, key: Optional[str] = None, upper_keys: bool = True)
     flattened = {}
 
     for k, v in value.items():
-        prefix = (f'{key}_' if key else '')
+        prefix = f'{key}_' if key else ''
         if upper_keys:
             prefix = prefix.upper()
         flattened.update({f'{prefix}{skey}': sval for skey, sval in flatten_keys(v, k, upper_keys=upper_keys).items()})
