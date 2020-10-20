@@ -111,9 +111,12 @@ def loaded_config_file(app_config):
 @skip_for_integration
 class TestFlattenKeys:
     def test_get_config_format(self, app_config):
-        assert config.Config.flatten_keys(app_config) == {'APP_PORT': 8000, 'DB_PORT': 5432, 'DB_DATABASE': 'postgres'}
+        assert config.flatten_keys(app_config) == {'APP_PORT': 8000, 'DB_PORT': 5432, 'DB_DATABASE': 'postgres'}
+
+    def test_get_config_format_no_upper_keys(self, app_config):
+        assert config.flatten_keys(app_config, upper_keys=False) == {'app_port': 8000, 'db_port': 5432, 'db_database': 'postgres'}
 
     def test_terminal_recursion_case(self):
         # The function should throw an error if a non-dict value is provided without a key
         with pytest.raises(Exception):
-            config.Config.flatten_keys(value=1)
+            config.flatten_keys(value=1)

@@ -99,7 +99,7 @@ class Config:  # pragma: only-covered-in-unit-tests
     @classmethod
     def get_config(cls, path: ValidPath, aliases: Dict[str, str] = None) -> Dict[str, ValidConfigType]:
         config = toml.load(path)
-        config_flattened = cls.flatten_keys(config)
+        config_flattened = flatten_keys(config)
 
         if aliases:
             for original, alias in aliases.items():
@@ -107,18 +107,22 @@ class Config:  # pragma: only-covered-in-unit-tests
 
         return config_flattened
 
-    @classmethod
-    def flatten_keys(cls, value: Any, key: Optional[str] = None) -> Dict[str, Any]:
-        if not isinstance(value, dict):
-            if not key:
-                raise Exception('Value cannot be a non-dict without a key')
 
+def flatten_keys(value: Any, key: Optional[str] = None, upper_keys: bool = True) -> Dict[str, Any]:
+    if not isinstance(value, dict):
+        if not key:
+            raise Exception('Value cannot be a non-dict without a key')
+
+        if upper_keys:
             return {key.upper(): value}
+        return {key: value}
 
-        flattened = {}
+    flattened = {}
 
-        for k, v in value.items():
-            prefix = (f'{key}_' if key else '').upper()
-            flattened.update({f'{prefix}{skey}': sval for skey, sval in cls.flatten_keys(v, k).items()})
+    for k, v in value.items():
+        prefix = (f'{key}_' if key else '')
+        if upper_keys:
+            prefix = prefix.upper()
+        flattened.update({f'{prefix}{skey}': sval for skey, sval in flatten_keys(v, k, upper_keys=upper_keys).items()})
 
-        return flattened
+    return flattened
