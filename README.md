@@ -1,5 +1,5 @@
 # utils-py
-![ci-badge](https://github.com/outcome-co/utils-py/workflows/Release/badge.svg?branch=v4.12.5) ![version-badge](https://img.shields.io/badge/version-4.12.5-brightgreen)
+![ci-badge](https://github.com/outcome-co/utils-py/workflows/Release/badge.svg?branch=v4.12.6) ![version-badge](https://img.shields.io/badge/version-4.12.6-brightgreen)
 
 A set of python utilities.
 
