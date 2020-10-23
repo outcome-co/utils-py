@@ -166,9 +166,10 @@ class TestTTLBackend:
         mock_pickle.load.assert_called_with(mock_read())
         assert backend.cache == mock_ttlcache.return_value
 
-    @patch('builtins.open', side_effect=FileNotFoundError)
+    @pytest.mark.parametrize(('side_effect'), [FileNotFoundError, EOFError])
     @patch('outcome.utils.cache.Path', autospec=True)
     @patch('outcome.utils.cache.TTLCache', autospec=True)
-    def test_persisted_no_file_found(self, mock_ttlcache, mock_path, mock_read, args_persisted):
-        backend = cache.TTLBackend(args_persisted)
-        assert backend.cache == mock_ttlcache.return_value
+    def test_persisted_error_opening_file(self, mock_ttlcache, mock_path, args_persisted, side_effect):
+        with patch('builtins.open', side_effect=side_effect):
+            backend = cache.TTLBackend(args_persisted)
+            assert backend.cache == mock_ttlcache.return_value

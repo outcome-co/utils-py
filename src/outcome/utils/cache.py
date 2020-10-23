@@ -136,7 +136,7 @@ class TTLBackend(CacheBackend):
                     if all(getattr(self.cache, arg_key) == getattr(pickled_cache, arg_key) for arg_key in arguments.keys()):
                         self.cache = pickled_cache  # noqa: WPS220 - deep nesting
 
-            except FileNotFoundError:
+            except (FileNotFoundError, EOFError):
                 pass
 
     def get(self, key):
