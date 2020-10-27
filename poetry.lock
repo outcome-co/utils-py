@@ -732,7 +732,7 @@ python-versions = "*"
 
 [[package]]
 name = "outcome-devkit"
-version = "3.2.2"
+version = "3.3.0"
 description = "A package containing common dev dependencies for python projects."
 category = "dev"
 optional = false
@@ -757,7 +757,7 @@ isort = ">=4.3.21,<5.0.0"
 mock = ">=4.0.2,<5.0.0"
 mypy = ">=0.780,<0.791"
 outcome-utils = ">=4.11.0,<5.0.0"
-pact-python = "1.2.9"
+pactman = ">=2.28.0,<3.0.0"
 pdbpp = ">=0.10.2,<0.11.0"
 pre-commit = ">=2.2.0,<3.0.0"
 pytest = ">=5.3.5,<7.0.0"
@@ -777,18 +777,19 @@ pyparsing = ">=2.0.2"
 six = "*"
 
 [[package]]
-name = "pact-python"
-version = "1.2.9"
+name = "pactman"
+version = "2.28.0"
 description = "Tools for creating and verifying consumer driven contracts using the Pact framework."
 category = "dev"
 optional = false
 python-versions = "*"
 
 [package.dependencies]
-click = ">=2.0.0"
-psutil = ">=2.0.0"
-requests = ">=2.5.0"
-six = ">=1.9.0"
+colorama = "*"
+pytest = "*"
+requests = "*"
+restnavigator = "*"
+semver = "*"
 
 [[package]]
 name = "parso"
@@ -901,17 +902,6 @@ python-versions = ">=3.6.1"
 
 [package.dependencies]
 wcwidth = "*"
-
-[[package]]
-name = "psutil"
-version = "5.7.2"
-description = "Cross-platform lib for process and system monitoring in Python."
-category = "dev"
-optional = false
-python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-
-[package.extras]
-test = ["ipaddress", "mock", "unittest2", "enum34", "pywin32", "wmi"]
 
 [[package]]
 name = "ptyprocess"
@@ -1059,6 +1049,23 @@ security = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)"]
 socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7)", "win-inet-pton"]
 
 [[package]]
+name = "restnavigator"
+version = "1.0.1"
+description = "A python library for interacting with HAL+JSON APIs"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+requests = ">=2.5.0"
+six = "*"
+Unidecode = ">=0.04.14"
+uritemplate = ">=0.6.0"
+
+[package.extras]
+test = ["httpretty (0.8.4)", "pytest (2.6.4)", "pytest-cache", "pytest-cov (1.8.1)", "tox"]
+
+[[package]]
 name = "restructuredtext-lint"
 version = "1.3.1"
 description = "reStructuredText linter"
@@ -1181,6 +1188,22 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "unidecode"
+version = "1.1.1"
+description = "ASCII transliterations of Unicode text"
+category = "dev"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[[package]]
+name = "uritemplate"
+version = "3.0.1"
+description = "URI templates"
+category = "dev"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[[package]]
 name = "urllib3"
 version = "1.25.10"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
@@ -1259,7 +1282,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8.5"
-content-hash = "ac5d6c6d76dc750c37e4c30ed248069139d469605149bc4ec74dc5b482732448"
+content-hash = "d59ccce2979b946c1592bbdb0fa9e22de2b6b3db7a298d5320548b8377d90b3c"
 
 [metadata.files]
 ansicolors = [
@@ -1597,15 +1620,15 @@ nodeenv = [
     {file = "nodeenv-1.5.0.tar.gz", hash = "sha256:ab45090ae383b716c4ef89e690c41ff8c2b257b85b309f01f3654df3d084bd7c"},
 ]
 outcome-devkit = [
-    {file = "outcome-devkit-3.2.2.tar.gz", hash = "sha256:a6e5b3aad105226a8b17d12f6bf687a19dbe2a15fd19af2f26e92a8e89f257a5"},
-    {file = "outcome_devkit-3.2.2-py3-none-any.whl", hash = "sha256:3b77f6f950b1af76a3f0d09f922e14911fb801cf47cd29cfbf82d8338bc9a98e"},
+    {file = "outcome-devkit-3.3.0.tar.gz", hash = "sha256:a9571905390f6052388ea9ccd1e00f161264d9f0ac32054a8a15276e7597bf40"},
+    {file = "outcome_devkit-3.3.0-py3-none-any.whl", hash = "sha256:fcff809e7f17c493d635caa7ba31f60eb07e20c3e2a48a2e6465a017d4e26da5"},
 ]
 packaging = [
     {file = "packaging-20.4-py2.py3-none-any.whl", hash = "sha256:998416ba6962ae7fbd6596850b80e17859a5753ba17c32284f67bfff33784181"},
     {file = "packaging-20.4.tar.gz", hash = "sha256:4357f74f47b9c12db93624a82154e9b120fa8293699949152b22065d556079f8"},
 ]
-pact-python = [
-    {file = "pact-python-1.2.9.tar.gz", hash = "sha256:3d6bb572eeda788b27b9252c32ff4dac2b67c9554fc88ed325bbc5ca9fdbe434"},
+pactman = [
+    {file = "pactman-2.28.0.tar.gz", hash = "sha256:549b4c7572e9997b87681af51ff679d09be53f5878f8cd3595ac5fdf4a99f088"},
 ]
 parso = [
     {file = "parso-0.7.1-py2.py3-none-any.whl", hash = "sha256:97218d9159b2520ff45eb78028ba8b50d2bc61dcc062a9682666f2dc4bd331ea"},
@@ -1645,19 +1668,6 @@ pre-commit = [
 prompt-toolkit = [
     {file = "prompt_toolkit-3.0.8-py3-none-any.whl", hash = "sha256:7debb9a521e0b1ee7d2fe96ee4bd60ef03c6492784de0547337ca4433e46aa63"},
     {file = "prompt_toolkit-3.0.8.tar.gz", hash = "sha256:25c95d2ac813909f813c93fde734b6e44406d1477a9faef7c915ff37d39c0a8c"},
-]
-psutil = [
-    {file = "psutil-5.7.2-cp27-none-win32.whl", hash = "sha256:f2018461733b23f308c298653c8903d32aaad7873d25e1d228765e91ae42c3f2"},
-    {file = "psutil-5.7.2-cp27-none-win_amd64.whl", hash = "sha256:66c18ca7680a31bf16ee22b1d21b6397869dda8059dbdb57d9f27efa6615f195"},
-    {file = "psutil-5.7.2-cp35-cp35m-win32.whl", hash = "sha256:5e9d0f26d4194479a13d5f4b3798260c20cecf9ac9a461e718eb59ea520a360c"},
-    {file = "psutil-5.7.2-cp35-cp35m-win_amd64.whl", hash = "sha256:4080869ed93cce662905b029a1770fe89c98787e543fa7347f075ade761b19d6"},
-    {file = "psutil-5.7.2-cp36-cp36m-win32.whl", hash = "sha256:d8a82162f23c53b8525cf5f14a355f5d1eea86fa8edde27287dd3a98399e4fdf"},
-    {file = "psutil-5.7.2-cp36-cp36m-win_amd64.whl", hash = "sha256:0ee3c36428f160d2d8fce3c583a0353e848abb7de9732c50cf3356dd49ad63f8"},
-    {file = "psutil-5.7.2-cp37-cp37m-win32.whl", hash = "sha256:ff1977ba1a5f71f89166d5145c3da1cea89a0fdb044075a12c720ee9123ec818"},
-    {file = "psutil-5.7.2-cp37-cp37m-win_amd64.whl", hash = "sha256:a5b120bb3c0c71dfe27551f9da2f3209a8257a178ed6c628a819037a8df487f1"},
-    {file = "psutil-5.7.2-cp38-cp38-win32.whl", hash = "sha256:10512b46c95b02842c225f58fa00385c08fa00c68bac7da2d9a58ebe2c517498"},
-    {file = "psutil-5.7.2-cp38-cp38-win_amd64.whl", hash = "sha256:68d36986ded5dac7c2dcd42f2682af1db80d4bce3faa126a6145c1637e1b559f"},
-    {file = "psutil-5.7.2.tar.gz", hash = "sha256:90990af1c3c67195c44c9a889184f84f5b2320dce3ee3acbd054e3ba0b4a7beb"},
 ]
 ptyprocess = [
     {file = "ptyprocess-0.6.0-py2.py3-none-any.whl", hash = "sha256:d7cc528d76e76342423ca640335bd3633420dc1366f258cb31d05e865ef5ca1f"},
@@ -1749,6 +1759,11 @@ requests = [
     {file = "requests-2.24.0-py2.py3-none-any.whl", hash = "sha256:fe75cc94a9443b9246fc7049224f75604b113c36acb93f87b80ed42c44cbb898"},
     {file = "requests-2.24.0.tar.gz", hash = "sha256:b3559a131db72c33ee969480840fff4bb6dd111de7dd27c8ee1f820f4f00231b"},
 ]
+restnavigator = [
+    {file = "restnavigator-1.0.1-py2-none-any.whl", hash = "sha256:b18e06c5b8b8acc604ccd2acb0282c2543c17b23c3b7bc472765ec484e93d083"},
+    {file = "restnavigator-1.0.1-py3-none-any.whl", hash = "sha256:9be39bb32ee58db5a8f8c5983dfcda95f4578eeb88a012a32b82708dc74fb4ca"},
+    {file = "restnavigator-1.0.1.tar.gz", hash = "sha256:b7dde0bd0cf81bb0e0b05a1529c7093a07700cbced0ecacac8c2e9b13c4bcdfa"},
+]
 restructuredtext-lint = [
     {file = "restructuredtext_lint-1.3.1.tar.gz", hash = "sha256:470e53b64817211a42805c3a104d2216f6f5834b22fe7adb637d1de4d6501fb8"},
 ]
@@ -1821,6 +1836,14 @@ typing-extensions = [
     {file = "typing_extensions-3.7.4.3-py2-none-any.whl", hash = "sha256:dafc7639cde7f1b6e1acc0f457842a83e722ccca8eef5270af2d74792619a89f"},
     {file = "typing_extensions-3.7.4.3-py3-none-any.whl", hash = "sha256:7cb407020f00f7bfc3cb3e7881628838e69d8f3fcab2f64742a5e76b2f841918"},
     {file = "typing_extensions-3.7.4.3.tar.gz", hash = "sha256:99d4073b617d30288f569d3f13d2bd7548c3a7e4c8de87db09a9d29bb3a4a60c"},
+]
+unidecode = [
+    {file = "Unidecode-1.1.1-py2.py3-none-any.whl", hash = "sha256:1d7a042116536098d05d599ef2b8616759f02985c85b4fef50c78a5aaf10822a"},
+    {file = "Unidecode-1.1.1.tar.gz", hash = "sha256:2b6aab710c2a1647e928e36d69c21e76b453cd455f4e2621000e54b2a9b8cce8"},
+]
+uritemplate = [
+    {file = "uritemplate-3.0.1-py2.py3-none-any.whl", hash = "sha256:07620c3f3f8eed1f12600845892b0e036a2420acf513c53f7de0abd911a5894f"},
+    {file = "uritemplate-3.0.1.tar.gz", hash = "sha256:5af8ad10cec94f215e3f48112de2022e1d5a37ed427fbd88652fa908f2ab7cae"},
 ]
 urllib3 = [
     {file = "urllib3-1.25.10-py2.py3-none-any.whl", hash = "sha256:e7983572181f5e1522d9c98453462384ee92a0be7fac5f1413a1e35c56cc0461"},
