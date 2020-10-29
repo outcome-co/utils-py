@@ -1,8 +1,9 @@
 """Config helper."""
 
 import os
+from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Dict, Optional, Union, cast
+from typing import Any, Dict, List, Optional, Union, cast
 
 import toml
 
@@ -18,83 +19,61 @@ class Sentinel:
 NO_DEFAULT = Sentinel()
 
 
-class Config:  # pragma: only-covered-in-unit-tests
-    """This class helps with retrieving config values from a project environment.
+class ConfigBackend(ABC):
+    @abstractmethod
+    def get(self, key: str) -> ValidConfigType:  # pragma: no cover
+        ...
 
-    You can provide a path to a TOML file, typically the pyproject.toml, or just
-    let the class try to extract the values from environment variables.
+    @abstractmethod
+    def __contains__(self, key: str) -> bool:  # pragma: no cover
+        ...
 
-    Environment variables will always take precedence over the values found in the file.
 
-    The keys from the TOML file will be flattened and transformed to uppercase, following
-    environment variable conventions.
+class EnvBackend(ConfigBackend):
+    def get(self, key: str) -> ValidConfigType:
+        return cast(str, os.environ[key])
 
-    For example:
+    def __contains__(self, key: str) -> bool:
+        return key in os.environ
 
-    ```toml
-    [app]
-    port = 80
-    ```
 
-    Will be transformed into
+class DefaultBackend(ConfigBackend):
 
-    ```py
-    {
-        'APP_PORT': 80
-    }
-    ```
-    """
+    defaults: Dict[str, str]
+
+    def __init__(self, defaults: Dict[str, str]):
+        self.defaults = defaults
+
+    def get(self, key: str) -> ValidConfigType:
+        return self.defaults[key]
+
+    def __contains__(self, key: str) -> bool:
+        return key in self.defaults
+
+
+class TomlBackend(ConfigBackend):
 
     path: Optional[ValidPath]
     config: Optional[ConfigDict]
     aliases: Optional[Dict[str, str]]
 
-    def __init__(
-        self,
-        path: Optional[ValidPath] = None,
-        aliases: Optional[Dict[str, str]] = None,
-        defaults: Optional[Dict[str, ValidConfigType]] = None,
-    ) -> None:
-        """Initialize the class with an optional config file and set of aliases.
-
-        The aliases dict will rewrite config keys from key to value:
-
-        ```
-        aliases = {'ORIGINAL_KEY': 'NEW_KEY'}
-        config = Config('some_file.toml', aliases)
-
-        config.get('ORIGINAL_KEY')  # -> raises KeyError
-        config.get('NEW_KEY')  # -> returns value
-        ```
-
-        The defaults dict is the final fallback.
-
-        Arguments:
-            path (ValidPath, optional): The path to the config file.
-            aliases (Dict[str, str], optional): The aliasing dict.
-            defaults (Dict[str, ValidConfigType], optional): A dict of hardcoded values
-        """
+    def __init__(self, path: Optional[ValidPath] = None, aliases: Optional[Dict[str, str]] = None):
         self.path = path
-        self.config = None
         self.aliases = aliases
-        self.defaults = (defaults or {}).copy()
+        self.config = None
 
-    def get(self, key: str, default: Optional[Union[ValidConfigType, Sentinel]] = NO_DEFAULT) -> ValidConfigType:
-        if key in os.environ:
-            return cast(str, os.environ.get(key))
+    def get(self, key: str) -> ValidConfigType:
+        if not self.config:
+            self.load_config()
+        return self.config[key]
 
-        if self.path:
-            if not self.config:
-                self.config = self.get_config(self.path, self.aliases)
-            if key in self.config:
-                return self.config[key]  # noqa: WPS529
+    def __contains__(self, key: str) -> bool:
+        if not self.config:
+            self.load_config()
+        return key in self.config
 
-        try:
-            return self.defaults[key]
-        except KeyError as exc:
-            if default != NO_DEFAULT:
-                return default
-            raise exc
+    def load_config(self):
+        self.config = self.get_config(self.path, self.aliases)
 
     @classmethod
     def get_config(cls, path: ValidPath, aliases: Dict[str, str] = None) -> Dict[str, ValidConfigType]:
@@ -122,3 +101,85 @@ class Config:  # pragma: only-covered-in-unit-tests
             flattened.update({f'{prefix}{skey}': sval for skey, sval in cls.flatten_keys(v, k).items()})
 
         return flattened
+
+
+class Config:  # pragma: only-covered-in-unit-tests
+    """This class helps with retrieving config values from a project environment.
+
+    You can provide a path to a TOML file, typically the pyproject.toml, or just
+    let the class try to extract the values from environment variables.
+
+    Environment variables will always take precedence over the values found in the file.
+
+    The keys from the TOML file will be flattened and transformed to uppercase, following
+    environment variable conventions.
+
+    For example:
+
+    ```toml
+    [app]
+    port = 80
+    ```
+
+    Will be transformed into
+
+    ```py
+    {
+        'APP_PORT': 80
+    }
+    ```
+
+    If needed you can modify Config backends to change the order of priority, or to add your own backends.
+    You can use add_backend method to add your own backend at the desired priority.
+    If you wish to add your own backend, it needs to inherit from ConfigBackend abstract class.
+    """
+
+    backends: List[ConfigBackend]
+    default_backend: DefaultBackend
+
+    def __init__(
+        self,
+        path: Optional[ValidPath] = None,
+        aliases: Optional[Dict[str, str]] = None,
+        defaults: Optional[Dict[str, ValidConfigType]] = None,
+    ) -> None:
+        """Initialize the class with an optional config file and set of aliases.
+
+        The aliases dict will rewrite config keys from key to value:
+
+        ```
+        aliases = {'ORIGINAL_KEY': 'NEW_KEY'}
+        config = Config('some_file.toml', aliases)
+
+        config.get('ORIGINAL_KEY')  # -> raises KeyError
+        config.get('NEW_KEY')  # -> returns value
+        ```
+
+        The defaults dict is the final fallback.
+
+        Arguments:
+            path (ValidPath, optional): The path to the config file.
+            aliases (Dict[str, str], optional): The aliasing dict.
+            defaults (Dict[str, ValidConfigType], optional): A dict of hardcoded values
+        """
+        self.backends = [EnvBackend()]
+        if path:
+            self.backends.append(TomlBackend(path=path, aliases=aliases))
+
+        self.default_backend = DefaultBackend(defaults or {})
+
+    def get(self, key: str, default: Optional[Union[ValidConfigType, Sentinel]] = NO_DEFAULT) -> ValidConfigType:
+
+        for backend in self.backends:
+            if key in backend:
+                return backend.get(key)
+
+        try:
+            return self.default_backend.get(key)
+        except KeyError as exc:
+            if default != NO_DEFAULT:
+                return default
+            raise exc
+
+    def add_backend(self, backend: ConfigBackend, priority: int):
+        self.backends.insert(priority, backend)
