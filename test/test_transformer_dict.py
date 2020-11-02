@@ -6,7 +6,7 @@ def upper(v: str) -> str:
     return v.upper()
 
 
-uc_dict = TransformerDict[str, str](transformer=upper)
+uc_dict = TransformerDict[str, str, str](transformer=upper)
 
 
 @pytest.fixture(autouse=True)
