@@ -1,3 +1,5 @@
+import os
+import pickle  # noqa: S403
 from unittest.mock import mock_open, patch
 
 import pytest
@@ -84,23 +86,6 @@ def test_key_generator_strip_self():
     assert generator_a(1) == generator_b(1)
 
 
-@pytest.fixture
-def args():
-    return {'maxsize': 100, 'ttl': test_ttl}
-
-
-@pytest.fixture
-def args_persisted(args, test_cache_path):
-    args_persisted = args.copy()
-    args_persisted.update({'cache_path': test_cache_path})
-    return args_persisted
-
-
-@pytest.fixture
-def test_cache_path():
-    return 'test/.cache/cache.pkl'
-
-
 class Timer(object):
     """This object will replace the timer in cachetools for tests, to be able to mock key expiration."""
 
@@ -120,31 +105,75 @@ class Timer(object):
         self.time += value + 1
 
 
+key = 'key'
+value = 'value'
+
+
+args_raw = {'maxsize': 100, 'ttl': test_ttl}
+test_cache_path_raw = 'test/.cache/cache.pkl'
+persisted_args_raw = dict(cache_path=test_cache_path_raw, **args_raw)
+
+
+@pytest.fixture
+def args():
+    return args_raw
+
+
+@pytest.fixture
+def args_persisted(args, test_cache_path):
+    args_persisted = args.copy()
+    args_persisted.update({'cache_path': test_cache_path})
+    return args_persisted
+
+
+@pytest.fixture
+def test_cache_path():
+    return test_cache_path_raw
+
+
+def key_generator(*args, **kwargs):
+    def gen(*args, **kwargs):
+        return key
+
+    return gen
+
+
 class TestTTLBackend:
-    @patch('outcome.utils.cache.TTLCache', autospec=True)
-    def test_memory(self, mock_ttlcache, args):
-        backend = cache.TTLBackend(args)
-        mock_ttlcache.assert_called_with(**args)
+    region = cache.get_cache_region()
+    cache.configure_cache_region(region, settings={'test.memory.cache_path': test_cache_path_raw}, prefix=test)
 
-        key = 'key'
-        value = 'value'
-
-        backend.delete(key)
-        backend.cache.pop.assert_called_with(key)
-        backend.cache.reset_mock()
-
-        backend.set(key, value)
-        backend.cache.__setitem__.assert_called_with(key, value)
-        backend.cache.reset_mock()
-
-        backend.get(key)
-        backend.cache.get.assert_called_with(key, NO_VALUE)
+    @region.cache_on_arguments(function_key_generator=key_generator)
+    @cache.cache_async
+    async def sample_cacheable_function(self, value):
+        return value
 
     @patch('cachetools.ttl._Timer', Timer)
-    def test_persisted(self, args_persisted, test_cache_path):
-        key = 'key'
-        value = 'value'
-        backend = cache.TTLBackend(args_persisted)
+    @pytest.mark.asyncio
+    async def test_backend_coroutine(self, fs, test_cache_path):  # noqa: WPS218 - many `assert`
+        fs.create_file(test_cache_path)
+        backend = self.region.backend
+
+        co_cache = self.sample_cacheable_function(value)
+        assert co_cache.done is False
+        # If the coroutine hasn't been awaited, the cache file is empty,
+        # but when we `get` on the `backend`, we'll get the coroutine from `coroutine_cache`
+        assert os.path.getsize(test_cache_path) == 0
+        assert backend.get(key)[0] == co_cache
+
+        new_co_cache = self.sample_cacheable_function(value)
+        assert new_co_cache == co_cache
+        awaited = await new_co_cache
+        assert new_co_cache.done is True
+        # If the coroutine has been awaited, the key is in the cache file and the backend returns the awaited values
+        with open(test_cache_path, 'rb') as f:
+            cached_tests = pickle.load(f)  # noqa: S301 - pickle usage
+        assert cached_tests.get(key)[0].result == awaited
+        assert backend.get(key)[0].result == awaited
+
+    @pytest.mark.parametrize(('args'), [args_raw, persisted_args_raw])
+    @patch('cachetools.ttl._Timer', Timer)
+    def test_backend(self, args, fs):
+        backend = cache.TTLBackend(args)
 
         backend.set(key, value)
         assert backend.get(key) == value
@@ -155,6 +184,19 @@ class TestTTLBackend:
         assert backend.get(key) == value
         backend.delete(key)
         assert backend.get(key) == NO_VALUE
+
+    @patch('cachetools.ttl._Timer', Timer)
+    def test_backend_retrieve_existing_cache(self, fs):
+        args_raw.update({'cache_path': test_cache_path_raw})
+        backend = cache.TTLBackend(args_raw)
+        backend.set(key, value)
+        assert backend.get(key) == value
+
+        # We update the `args_raw` each time we need it to avoid `cache_path`
+        # being removed from the arguments in `TTLBackend.__init__`
+        args_raw.update({'cache_path': test_cache_path_raw})
+        new_backend = cache.TTLBackend(args_raw)
+        assert new_backend.get(key) == value
 
     @patch('builtins.open', new_callable=mock_open)
     @patch('outcome.utils.cache.pickle', autospec=True)

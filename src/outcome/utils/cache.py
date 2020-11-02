@@ -15,11 +15,15 @@ from makefun import wraps
 
 
 class CoroutineCache:
-    def __init__(self, co):
+    # `CoroutineCache` allows to cache `async`functions.
+    # As a coroutine can't be called twice, we need this to check when it's done or not.
+
+    def __init__(self, co=None, result=None):
         self.co = co
         self.done = False
-        self.result = None
+        self.result = result
         self.lock = asyncio.Lock()
+        self.await_hooks = []
 
     def __await__(self):  # noqa: WPS611 - `yield` magic method usage
         # We catch the warnings here because this is a sync function
@@ -31,7 +35,17 @@ class CoroutineCache:
                     return self.result
                 self.result = yield from self.co.__await__()  # noqa: WPS609 - direct magic attribute usage
                 self.done = True
+                self.co = None
+                # These hooks allow to apply functions that will run only when the coroutine is awaited
+                for hook in self.await_hooks:
+                    hook(self)
                 return self.result
+
+    def __reduce__(self):  # noqa: WPS603
+        # This method is used by `pickle` to know how to serialize this object
+        # Note this only works in the case the coroutine is already done
+        # We need to return `(class_object, (tuple_of_arguments_to_pass_to_class_constructor))`
+        return (self.__class__, (None, self.result))
 
 
 def cache_async(f):
@@ -124,6 +138,9 @@ class TTLBackend(CacheBackend):
     def __init__(self, arguments):
 
         self.persisted_cache_path = arguments.pop(self._cache_path, None)
+        # This `coroutine_cache` will keep in memory all coroutines that have not already been awaited
+        self.coroutine_cache = TTLCache(**arguments)
+        # A potentially persisted cache for all items to keep in cache
         self.cache = TTLCache(**arguments)
 
         if self.persisted_cache_path:
@@ -140,16 +157,33 @@ class TTLBackend(CacheBackend):
                 pass
 
     def get(self, key):
+        coroutine = self.coroutine_cache.get(key, None)
+        if coroutine:
+            return coroutine
+
         return self.cache.get(key, NO_VALUE)
 
+    def coroutine_awaited(self, key, co):
+        # This function will be called with when the coroutine is awaited.
+        # It transfers the coroutine from the in memory coroutine cache to the potentially persisted general cache.
+        self.set(key, self.coroutine_cache.pop(key, co))
+
     def set(self, key, value):  # noqa: WPS125, A003
+        # In the case when the coroutine have not been awaited, we add it to the in memory coroutine cache
+        if isinstance(value[0], CoroutineCache) and not value[0].done:
+            value[0].await_hooks.append(lambda co: self.coroutine_awaited(key, co))
+            self.coroutine_cache[key] = value
+            return
+
         self.cache[key] = value
         if self.persisted_cache_path:
             self.persist_cache()
 
     def delete(self, key):
-        self.cache.pop(key)
-        if self.persisted_cache_path:
+        self.coroutine_cache.pop(key, None)
+
+        sentinel = object()
+        if self.cache.pop(key, sentinel) is not sentinel and self.persisted_cache_path:
             self.persist_cache()
 
     def persist_cache(self):

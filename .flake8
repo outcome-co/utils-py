@@ -40,6 +40,7 @@ ignore = W503, # Allow line break before binary operator
 
 per-file-ignores = test/**.py: WPS442, WPS226, WPS219, S101, D100, WPS211, WPS609, WPS118, WPS450, WPS204, WPS214, WPS507
                    src/outcome/utils/pre_condition.py: WPS232
+                   src/outcome/utils/cache.py: WPS402
 # WPS442, # pytest fixtures require shadowing
 # WPS211, # Too many arguments
 # WPS226, # Allow several usage of string constants (> 3)
@@ -53,7 +54,7 @@ per-file-ignores = test/**.py: WPS442, WPS226, WPS219, S101, D100, WPS211, WPS60
 # WPS214, # Too many methods
 # WPS507, # Useless len compare
 # WPS232, # Cognitive complexity
-
+# WPS402, # `noqa` comment overuse
 
 
 [isort]
