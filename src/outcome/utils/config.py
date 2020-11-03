@@ -1,5 +1,6 @@
 """Config helper."""
 
+import base64
 import os
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -11,12 +12,7 @@ ValidPath = Union[str, Path]
 ValidConfigType = Union[str, int, float, bool]
 ConfigDict = Dict[str, ValidConfigType]
 
-
-class Sentinel:
-    ...
-
-
-NO_DEFAULT = Sentinel()
+NO_DEFAULT = object()
 
 
 class ConfigBackend(ABC):
@@ -29,9 +25,24 @@ class ConfigBackend(ABC):
         ...
 
 
+base_64_protocol = 'base64://'  # noqa: WPS114
+
+
 class EnvBackend(ConfigBackend):
     def get(self, key: str) -> ValidConfigType:
-        return cast(str, os.environ[key])
+        value = cast(str, os.environ[key])
+
+        # We can define protocols as suffix of the env variable.
+        # For instance, if the env variable starts with `base64://` we will decode the rest of the string
+        # with b64decode.
+        #
+        # This can be useful to store RSA keys as env variable since they need to be encoded as base64 strings.
+        # This can also be used to specify a path to sensitive data stored in a remote database, and the get function
+        # will be able to fetch the corresponding data depending on the specified protocol.
+        if value.startswith(base_64_protocol):
+            return base64.b64decode(value[len(base_64_protocol) :]).decode('utf-8')
+
+        return value
 
     def __contains__(self, key: str) -> bool:
         return key in os.environ
@@ -168,7 +179,7 @@ class Config:  # pragma: only-covered-in-unit-tests
 
         self.default_backend = DefaultBackend(defaults or {})
 
-    def get(self, key: str, default: Optional[Union[ValidConfigType, Sentinel]] = NO_DEFAULT) -> ValidConfigType:
+    def get(self, key: str, default: Optional[ValidConfigType] = NO_DEFAULT) -> ValidConfigType:
 
         for backend in self.backends:
             if key in backend:
@@ -177,7 +188,7 @@ class Config:  # pragma: only-covered-in-unit-tests
         try:
             return self.default_backend.get(key)
         except KeyError as exc:
-            if default != NO_DEFAULT:
+            if default is not NO_DEFAULT:
                 return default
             raise exc
 

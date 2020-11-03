@@ -37,6 +37,7 @@ ignore = W503, # Allow line break before binary operator
          WPS431, # Allow nested classes
          WPS437, # Allow usage of protected attribute : _state
          WPS604, # Allow usage of `pass` or `global var` inside classes
+         E203, # Forbid whitespace before ':' - concurrency issues with Black
 
 per-file-ignores = test/**.py: WPS442, WPS226, WPS219, S101, D100, WPS211, WPS609, WPS118, WPS450, WPS204, WPS214, WPS507
                    src/outcome/utils/pre_condition.py: WPS232

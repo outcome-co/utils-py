@@ -1,3 +1,4 @@
+import base64
 from unittest.mock import patch
 
 import pytest
@@ -37,6 +38,12 @@ def loaded_config_file(app_config):
 class TestEnvBackend:
     @patch.dict('os.environ', some_environ_raw(), clear=True)
     def test_get(self):
+        env_backend = config.EnvBackend()
+        assert env_backend.get('env_key') == 'env_value'
+        assert 'env_key' in env_backend
+
+    @patch.dict('os.environ', {'env_key': f'base64://{base64.b64encode(b"env_value").decode("utf-8")}'}, clear=True)
+    def test_get_b64(self):
         env_backend = config.EnvBackend()
         assert env_backend.get('env_key') == 'env_value'
         assert 'env_key' in env_backend
