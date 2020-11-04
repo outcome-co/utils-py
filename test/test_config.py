@@ -1,5 +1,6 @@
 import base64
-from unittest.mock import patch
+from typing import Tuple
+from unittest.mock import Mock, patch
 
 import pytest
 from outcome.devkit.test_helpers import skip_for_integration
@@ -181,3 +182,14 @@ class TestConfigGet:
         conf.add_backend(my_backend, 1)
         assert conf.backends[1] == my_backend
         assert len(conf.backends) == 3
+
+
+@skip_for_integration
+@patch('outcome.utils.config.Config.get', autospec=True)
+class TestAppConfig:
+    @pytest.mark.parametrize('get_value', [('foo', 'foo'), ('foo-api-app', 'foo')])
+    def test_config_get(self, mock_config_get: Mock, get_value: Tuple[str]):
+        mock_config_get.return_value = get_value[0]
+        conf = config.AppConfig()
+        assert conf.get('APP_NAME') == get_value[1]
+        assert conf.get('OTHER') == get_value[0]

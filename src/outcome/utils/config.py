@@ -194,3 +194,19 @@ class Config:  # pragma: only-covered-in-unit-tests
 
     def add_backend(self, backend: ConfigBackend, priority: int):
         self.backends.insert(priority, backend)
+
+
+class AppConfig(Config):
+    # This class wraps Config in order to modify return value of APP_NAME
+    #
+    # Indeed, in most pyprojecttoml files, the application name is of the form `myproject-api-app`,
+    # which maps to the name of its Github repository or Docker image.
+    #
+    # However, in our application environment, we only want to keep `myproject`.
+    # This allows for instance to use APP_NAME to fetch the right service of OTCServices.
+
+    def get(self, key: str, default: Optional[ValidConfigType] = NO_DEFAULT) -> ValidConfigType:
+        key_value = super().get(key, default)
+        if key == 'APP_NAME':
+            return key_value.split('-')[0]
+        return key_value
