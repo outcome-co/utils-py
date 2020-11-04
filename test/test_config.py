@@ -185,11 +185,16 @@ class TestConfigGet:
 
 
 @skip_for_integration
-@patch('outcome.utils.config.Config.get', autospec=True)
 class TestAppConfig:
+    @patch('outcome.utils.config.Config.get', autospec=True)
     @pytest.mark.parametrize('get_value', [('foo', 'foo'), ('foo-api-app', 'foo')])
     def test_config_get(self, mock_config_get: Mock, get_value: Tuple[str]):
         mock_config_get.return_value = get_value[0]
         conf = config.AppConfig()
         assert conf.get('APP_NAME') == get_value[1]
         assert conf.get('OTHER') == get_value[0]
+
+    def test_config_get_with_default(self):
+        conf = config.AppConfig()
+        assert conf.get('APP_NAME', None) is None
+        assert conf.get('APP_NAME', 'other-name') == 'other-name'

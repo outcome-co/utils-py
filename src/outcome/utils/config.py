@@ -208,5 +208,7 @@ class AppConfig(Config):
     def get(self, key: str, default: Optional[ValidConfigType] = NO_DEFAULT) -> ValidConfigType:
         key_value = super().get(key, default)
         if key == 'APP_NAME':
+            if key_value is default:
+                return default
             return key_value.split('-')[0]
         return key_value
