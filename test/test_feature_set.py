@@ -29,7 +29,7 @@ expected_feature_keys = [
 
 @pytest.mark.parametrize('feature,key', expected_feature_keys)
 def test_feature_env_keys(feature, key):
-    assert feature_set._feature_to_env_key(feature) == key
+    assert feature_set._feature_to_config_key(feature) == key
 
 
 @pytest.fixture(params=valid_feature_names_raw)
@@ -190,3 +190,15 @@ def test_set_known_feature():
     assert not feature_set.is_active(inactive_feature)
     feature_set.set_feature_default(inactive_feature, default_state=True)
     assert feature_set.is_active(inactive_feature)
+
+
+@patch.dict(os.environ, {}, clear=True)
+@pytest.mark.usefixtures('register_feature')
+def test_feature_source_default():
+    assert feature_set._feature_state_source(default_feature) == 'default'
+
+
+@patch.dict(os.environ, {'WITH_FEAT_DEFAULT_FEATURE': '1'}, clear=True)
+@pytest.mark.usefixtures('register_feature')
+def test_feature_source_config():
+    assert feature_set._feature_state_source(default_feature) == 'config'

@@ -2,12 +2,14 @@
 
 import re
 import warnings
-from typing import Dict
+from typing import Dict, Literal, Optional
 
 from outcome.utils import env
 from outcome.utils.config import Config
 from rich.console import Console
 from rich.table import Table
+
+StateSource = Literal['config', 'default']
 
 
 class FeatureException(Exception):
@@ -34,7 +36,7 @@ def _is_valid_feature_name(feature: str):
     return all(re.match(_feature_pattern, part) is not None for part in feature.split('.'))
 
 
-def _feature_to_env_key(feature: str) -> str:
+def _feature_to_config_key(feature: str) -> str:
     replaced = feature.replace('.', '_').upper()
     return f'{_feature_prefix}{replaced}'
 
@@ -69,12 +71,16 @@ def display_features():  # pragma: no cover
     table.add_column('Feature Flag')
     table.add_column('State', justify='right')
     table.add_column('Default State', justify='right')
+    table.add_column('Config Key', justify='left')
+    table.add_column('Set By', justify='right')
 
     def state_repr(state):
         return '[bold green]active[/bold green]' if state else '[bold red]inactive[/bold red]'
 
     for feat, state in features().items():
-        table.add_row(feat, state_repr(state), state_repr(_features[feat]))
+        table.add_row(
+            feat, state_repr(state), state_repr(_features[feat]), _feature_to_config_key(feat), _feature_state_source(feat),
+        )
 
     console.print(table)
 
@@ -83,14 +89,31 @@ def is_active(feature: str) -> bool:
     if not _feature_check(feature):
         return False
 
-    try:
-        feature_key = _feature_to_env_key(feature)
-        value = _config.get(feature_key)
-        return _coerce_boolean(value) if isinstance(value, str) else value
-    except KeyError:
-        ...
+    value = _feature_status_from_config(feature)
+
+    if value is not None:
+        return value
 
     return _features[feature]
+
+
+def _feature_status_from_config(feature: str) -> Optional[bool]:
+    try:
+        feature_key = _feature_to_config_key(feature)
+        value = _config.get(feature_key)
+        return value if isinstance(value, bool) else _coerce_boolean(value)
+    except KeyError:
+        return None
+
+
+def _feature_state_source(feature: str) -> StateSource:
+    _feature_check(feature)
+
+    value = _feature_status_from_config(feature)
+
+    if value is None:
+        return 'default'
+    return 'config'
 
 
 def _feature_check(feature):
