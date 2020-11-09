@@ -1086,7 +1086,7 @@ docutils = ">=0.11,<1.0"
 
 [[package]]
 name = "rich"
-version = "9.1.0"
+version = "9.2.0"
 description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
 category = "main"
 optional = false
@@ -1796,8 +1796,8 @@ restructuredtext-lint = [
     {file = "restructuredtext_lint-1.3.1.tar.gz", hash = "sha256:470e53b64817211a42805c3a104d2216f6f5834b22fe7adb637d1de4d6501fb8"},
 ]
 rich = [
-    {file = "rich-9.1.0-py3-none-any.whl", hash = "sha256:5dd934a0f8953b59d9a5d8d58864012174f0b5ad2de687fd04f4df195f7f7066"},
-    {file = "rich-9.1.0.tar.gz", hash = "sha256:05f1cf4dc191c483867b098d8572546de266440d61911d8270069023e325d14a"},
+    {file = "rich-9.2.0-py3-none-any.whl", hash = "sha256:564fee761e0756c3a4fbe97517166703754e11b4e861983cf184c78c9de8b570"},
+    {file = "rich-9.2.0.tar.gz", hash = "sha256:7003a1cce3b79bf4d34a26099b00a4b67e208d4a6896a1c25368603d5f49f295"},
 ]
 semver = [
     {file = "semver-2.13.0-py2.py3-none-any.whl", hash = "sha256:ced8b23dceb22134307c1b8abfa523da14198793d9787ac838e70e29e77458d4"},
