@@ -74,10 +74,16 @@ def is_google_cloud() -> bool:
     return _is_google_cloud  # noqa: WPS432,WPS121,WPS122,WPS442,R504
 
 
-# We don't try to test this
-def is_ipython() -> bool:  # pragma: no cover
+def is_ipython() -> bool:
+    # This is never actually set by iPython, but we can
+    # set it programmatically when we know that we're in iPython
+    # or that we're going to be soon
+    if '__IPYTHON__' in os.environ:
+        return True
+
     try:
-        __IPYTHON__
+        # This function is added to builtins by iPython
+        get_ipython()
         return True
     except NameError:
         return False

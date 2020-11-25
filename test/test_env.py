@@ -105,3 +105,20 @@ class TestEnv:
     @patch.dict('os.environ', {}, clear=True)
     def test_is_pytest_no_env(self):
         assert env.is_pytest()
+
+    @patch.dict('os.environ', {}, clear=True)
+    def test_is_not_ipython(self):
+        assert not env.is_ipython()
+
+    @patch.dict('os.environ', {}, clear=True)
+    def test_is_ipython(self):
+        # Mimic iPython
+        __builtins__['get_ipython'] = lambda: True
+
+        assert env.is_ipython()
+
+        del __builtins__['get_ipython']
+
+    @patch.dict('os.environ', {'__IPYTHON__': '1'}, clear=True)
+    def test_is_ipython_env(self):
+        assert env.is_ipython()
