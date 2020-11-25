@@ -25,10 +25,12 @@ requests = "^2.24.0"
 "dogpile.cache" = "^1.0.2"
 cachetools = "^4.1.1"
 pyfakefs = "^4.1.0"
+python-dotenv = "^0.15.0"
 
 [tool.poetry.dev-dependencies]
 pytest-asyncio = "^0.14.0"
 ansicolors = "^1.1.8"
+pyfakefs = "^4.3.1"
 outcome-devkit = "^3.4.3"
 
 [tool.poetry.scripts]

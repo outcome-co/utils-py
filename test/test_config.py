@@ -1,4 +1,5 @@
 import base64
+from pathlib import Path
 from typing import Tuple
 from unittest.mock import Mock, patch
 
@@ -42,6 +43,17 @@ class TestEnvBackend:
         env_backend = config.EnvBackend()
         assert env_backend.get('env_key') == 'env_value'
         assert 'env_key' in env_backend
+
+    @patch.dict('os.environ', {}, clear=True)
+    def test_get_from_dotenv(self, fs):
+        env_file = Path.cwd() / '.env'
+
+        with open(env_file, 'w') as handle:
+            handle.write('TEST_DOTENV_VAR=hello\n')
+
+        env_backend = config.EnvBackend()
+
+        assert env_backend.get('TEST_DOTENV_VAR') == 'hello'
 
     @patch.dict('os.environ', {'env_key': f'base64://{base64.b64encode(b"env_value").decode("utf-8")}'}, clear=True)
     def test_get_b64(self):

@@ -18,9 +18,6 @@ def pre_condition(pre_condition_fn: Callable[..., bool]):  # noqa: WPS231,WPS212
     Args:
         pre_condition_fn (Callable[..., bool]): The pre-condition function.
 
-    Raises:
-        UnmetPreconditionException: If the pre-condition fails.
-
     Returns:
         Callable: The wrapped function
     """

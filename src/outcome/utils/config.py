@@ -7,6 +7,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Union, cast
 
 import toml
+from dotenv import load_dotenv
+from outcome.utils import env
 
 ValidPath = Union[str, Path]
 ValidConfigType = Union[str, int, float, bool]
@@ -29,6 +31,10 @@ base_64_protocol = 'base64://'  # noqa: WPS114
 
 
 class EnvBackend(ConfigBackend):
+    def __init__(self):
+        dotenv_file = Path.cwd() / '.env'
+        load_dotenv(dotenv_path=dotenv_file, verbose=env.is_dev())
+
     def get(self, key: str) -> ValidConfigType:
         value = cast(str, os.environ[key])
 
