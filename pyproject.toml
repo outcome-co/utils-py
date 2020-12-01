@@ -13,7 +13,7 @@ documentation = "https://github.com/outcome-co/utils-py#README"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "~3.8"
+python = "~3.8.6"
 jinja2 = "^2.11.2"
 colored = "^1.4.2"
 toml = "^0.10.1"
@@ -26,12 +26,17 @@ requests = "^2.24.0"
 cachetools = "^4.1.1"
 pyfakefs = "^4.1.0"
 python-dotenv = "^0.15.0"
+transaction = { version="^3.0.0", optional = true }
+
+[tool.poetry.extras]
+transaction = ["transaction"]
 
 [tool.poetry.dev-dependencies]
 pytest-asyncio = "^0.14.0"
 ansicolors = "^1.1.8"
 pyfakefs = "^4.3.1"
 outcome-devkit = "^3.4.3"
+transaction = "^3.0.0"
 
 [tool.poetry.scripts]
 otc-utils = 'outcome.utils.bin.otc_utils:main'
