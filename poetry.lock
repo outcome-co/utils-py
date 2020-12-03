@@ -663,7 +663,7 @@ i18n = ["Babel (>=0.8)"]
 
 [[package]]
 name = "makefun"
-version = "1.9.4"
+version = "1.9.5"
 description = "Small library to dynamically create python functions."
 category = "main"
 optional = false
@@ -1601,8 +1601,8 @@ jinja2 = [
     {file = "Jinja2-2.11.2.tar.gz", hash = "sha256:89aab215427ef59c34ad58735269eb58b1a5808103067f7bb9d5836c651b3bb0"},
 ]
 makefun = [
-    {file = "makefun-1.9.4-py2.py3-none-any.whl", hash = "sha256:0d25e38c0b63170cfa0d1f7c6a7d43aba76d3aa75be04cd7070366b488080205"},
-    {file = "makefun-1.9.4.tar.gz", hash = "sha256:65234d5174316e2284e7e61a0ab2f2bfece88dbc0e14bd21e08db228462f503f"},
+    {file = "makefun-1.9.5-py2.py3-none-any.whl", hash = "sha256:973e322aa41975dc0a1e2bc714e1fa174d4092bebc59a83502af2ce9000708b6"},
+    {file = "makefun-1.9.5.tar.gz", hash = "sha256:f0791b40036f396e6c361b0ad670cfc654291db8323c28cb3f0585b1b39cec6c"},
 ]
 markupsafe = [
     {file = "MarkupSafe-1.1.1-cp27-cp27m-macosx_10_6_intel.whl", hash = "sha256:09027a7803a62ca78792ad89403b1b7a73a01c8cb65909cd876f7fcebd79b161"},
