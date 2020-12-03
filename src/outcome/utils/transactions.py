@@ -23,6 +23,7 @@ with transaction(auto_apply=False) as ops:
 
 from contextlib import contextmanager
 from enum import Enum
+from typing import Callable, Generic, Optional, TypeVar
 
 from zope.interface import implementer
 
@@ -63,8 +64,18 @@ class OperationNotApplied(Exception):
     ...
 
 
-class Operation:
-    def __init__(self, apply_fn, rollback_fn):
+T = TypeVar('T')
+
+OperationApplyFn = Callable[[], Optional[T]]
+OperationRollbackFn = Callable[[Optional[T]], None]
+
+
+class Operation(Generic[T]):
+    result: Optional[T]
+    apply_fn: OperationApplyFn[T]
+    rollback_fn: OperationRollbackFn[T]
+
+    def __init__(self, apply_fn: OperationApplyFn[T], rollback_fn: OperationRollbackFn[T]):
         self.apply_fn = apply_fn
         self.rollback_fn = rollback_fn
         self.state = OperationState.pending
@@ -85,7 +96,7 @@ class Operation:
         if self.state != OperationState.applied:
             raise InvalidState
 
-        self.rollback_fn()
+        self.rollback_fn(self.result)
         self.state = OperationState.reset
 
 

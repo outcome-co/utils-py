@@ -15,26 +15,27 @@ def test_import_error():
 
 class TestOperation:
     def test_apply(self):
-        test_operation = Operation(apply_fn=lambda: None, rollback_fn=lambda: None)
+        test_operation = Operation(apply_fn=lambda: None, rollback_fn=lambda x: None)
         test_operation.apply()
         assert test_operation.state == OperationState.applied
 
     @pytest.mark.parametrize('invalid_state', [OperationState.applied, OperationState.errored, OperationState.reset])
     def test_apply_wrong_state(self, invalid_state):
-        test_operation = Operation(apply_fn=lambda: None, rollback_fn=lambda: None)
+        test_operation = Operation(apply_fn=lambda: None, rollback_fn=lambda x: None)
         test_operation.state = invalid_state
         with pytest.raises(InvalidState):
             test_operation.apply()
 
     def test_rollback(self):
-        test_operation = Operation(apply_fn=lambda: None, rollback_fn=lambda: None)
-        test_operation.state = OperationState.applied
+        test_operation = Operation(apply_fn=lambda: None, rollback_fn=lambda x: None)
+        test_operation.apply()
         test_operation.rollback()
         assert test_operation.state == OperationState.reset
 
     @pytest.mark.parametrize('invalid_state', [OperationState.pending, OperationState.errored, OperationState.reset])
     def test_rollback_wrong_state(self, invalid_state):
-        test_operation = Operation(apply_fn=lambda: None, rollback_fn=lambda: None)
+        test_operation = Operation(apply_fn=lambda: None, rollback_fn=lambda x: None)
+        test_operation.apply()
         test_operation.state = invalid_state
         with pytest.raises(InvalidState):
             test_operation.rollback()
@@ -43,7 +44,7 @@ class TestOperation:
 class TestTransaction:
     def test_auto_apply(self):
         with transaction() as ops:
-            test_operation = Operation(apply_fn=lambda: None, rollback_fn=lambda: None)
+            test_operation = Operation(apply_fn=lambda: None, rollback_fn=lambda x: None)
             assert test_operation.state == OperationState.pending
 
             ops.add(test_operation)
@@ -53,7 +54,7 @@ class TestTransaction:
 
     def test_manual_apply(self):
         with transaction(auto_apply=False) as ops:
-            test_operation = Operation(apply_fn=lambda: None, rollback_fn=lambda: None)
+            test_operation = Operation(apply_fn=lambda: None, rollback_fn=lambda x: None)
             assert test_operation.state == OperationState.pending
 
             ops.add(test_operation)
@@ -67,8 +68,8 @@ class TestTransaction:
     def test_manual_apply_one_op_not_applied(self):  # noqa: WPS218 - too many `assert` statements
         with pytest.raises(OperationNotApplied):
             with transaction(auto_apply=False) as ops:
-                first_operation = Operation(apply_fn=lambda: None, rollback_fn=lambda: None)
-                second_operation = Operation(apply_fn=lambda: None, rollback_fn=lambda: None)
+                first_operation = Operation(apply_fn=lambda: None, rollback_fn=lambda x: None)
+                second_operation = Operation(apply_fn=lambda: None, rollback_fn=lambda x: None)
 
                 assert first_operation.state == OperationState.pending
                 assert second_operation.state == OperationState.pending
