@@ -25,11 +25,10 @@ from contextlib import contextmanager
 from enum import Enum
 from typing import Callable, Generic, Optional, TypeVar
 
-from zope.interface import implementer
-
 try:
     from transaction import Transaction, TransactionManager  # noqa: WPS433 - nested import
     from transaction.interfaces import IDataManager  # noqa: WPS433 - nested import
+    from zope.interface import implementer  # noqa: WPS433 - nested import
 except ImportError as exc:
     raise Exception('You need to install the `transaction` extra to use the transaction features') from exc
 
