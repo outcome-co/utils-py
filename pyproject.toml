@@ -36,7 +36,7 @@ transaction = ["transaction", "zope.interface"]
 pytest-asyncio = "^0.14.0"
 ansicolors = "^1.1.8"
 pyfakefs = "^4.3.1"
-outcome-devkit = "^3.5.9"
+outcome-devkit = "^3.5.10"
 transaction = "^3.0.0"
 "zope.interface" = "^5.2.0"
 
