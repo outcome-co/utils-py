@@ -732,7 +732,7 @@ python-versions = "*"
 
 [[package]]
 name = "outcome-devkit"
-version = "3.5.10"
+version = "3.5.11"
 description = "A package containing common dev dependencies for python projects."
 category = "dev"
 optional = false
@@ -1332,7 +1332,7 @@ transaction = ["transaction", "zope.interface"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8.6"
-content-hash = "a1221726a908f81685425db3e127baf304f8b9c35ff811f2c58b487c2bd3a925"
+content-hash = "9e238b64f251cd87c8bfeefbd45e153b6dc1dc552b1f8a10c86d16de12876dcc"
 
 [metadata.files]
 ansicolors = [
@@ -1672,8 +1672,8 @@ nodeenv = [
     {file = "nodeenv-1.5.0.tar.gz", hash = "sha256:ab45090ae383b716c4ef89e690c41ff8c2b257b85b309f01f3654df3d084bd7c"},
 ]
 outcome-devkit = [
-    {file = "outcome-devkit-3.5.10.tar.gz", hash = "sha256:738879d21f53e1e76a4202fa3cc400e015f6889047370be00a0a7fd9e692b06e"},
-    {file = "outcome_devkit-3.5.10-py3-none-any.whl", hash = "sha256:2b01310d667e3fbbda7fcc642fe64541fce549b2619a24bfed1fc02e50710e74"},
+    {file = "outcome-devkit-3.5.11.tar.gz", hash = "sha256:9429985122c9a7559b4909002ac6564a20be892aeed02dd4ce98ab38c6180f56"},
+    {file = "outcome_devkit-3.5.11-py3-none-any.whl", hash = "sha256:280390736170d147bc6210b7850c1e955e64b91231d44860d07044c8688c698a"},
 ]
 packaging = [
     {file = "packaging-20.7-py2.py3-none-any.whl", hash = "sha256:eb41423378682dadb7166144a4926e443093863024de508ca5c9737d6bc08376"},
