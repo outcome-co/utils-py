@@ -2,7 +2,8 @@
 
 import re
 import warnings
-from typing import Dict, Literal, Optional
+from enum import Enum
+from typing import Dict, Literal, Optional, Union
 
 from outcome.utils import env
 from outcome.utils.config import Config
@@ -16,17 +17,24 @@ class FeatureException(Exception):
     ...
 
 
+class FeatureType(Enum):
+    boolean = 'boolean'
+    string = 'string'
+
+
 _feature_pattern = r'^[a-z]+(_?[a-z]+_?[a-z])*$'
 _feature_prefix = 'WITH_FEAT_'
 
-_features: Dict[str, bool]
+_features: Dict[str, Union[bool, str]]
+_feature_types: Dict[str, FeatureType]
 _config: Config
 
 
 def reset():
-    global _config, _features
+    global _config, _features, _feature_types
     _config = Config()  # noqa: WPS122,WPS442
     _features = {}  # noqa: WPS122,WPS442
+    _feature_types = {}  # noqa: WPS122,WPS442
 
 
 reset()
@@ -50,14 +58,21 @@ def set_config(config: Config):
     _config = config  # noqa: WPS122,WPS442
 
 
-def register_feature(feature: str, default: bool = False) -> None:
+def register_feature(feature: str, default: Optional[bool] = None, feature_type: FeatureType = FeatureType.boolean) -> None:
     if not _is_valid_feature_name(feature):
         raise FeatureException(f'Invalid feature name: {feature}')
 
     if feature in _features:
         raise FeatureException(f'Duplicate feature: {feature}')
 
+    if feature_type not in list(FeatureType):
+        raise FeatureException(f'Invalid Type: {feature_type}')
+
+    if default is None and feature_type == FeatureType.boolean:
+        default = False
+
     _features[feature] = default
+    _feature_types[feature] = feature_type
 
 
 def features() -> Dict[str, bool]:
@@ -70,6 +85,7 @@ def display_features():  # pragma: no cover
     table = Table(show_header=True, header_style='bold')
     table.add_column('Feature Flag')
     table.add_column('State', justify='right')
+    table.add_column('Feature Type')
     table.add_column('Default State', justify='right')
     table.add_column('Config Key', justify='left')
     table.add_column('Set By', justify='right')
@@ -77,9 +93,17 @@ def display_features():  # pragma: no cover
     def state_repr(state):
         return '[bold green]active[/bold green]' if state else '[bold red]inactive[/bold red]'
 
+    def type_repr(feature_type: FeatureType):
+        return feature_type.value
+
     for feat, state in features().items():
         table.add_row(
-            feat, state_repr(state), state_repr(_features[feat]), _feature_to_config_key(feat), _feature_state_source(feat),
+            feat,
+            state_repr(state),
+            type_repr(_feature_types[feat]),
+            state_repr(_features[feat]),
+            _feature_to_config_key(feat),
+            _feature_state_source(feat),
         )
 
     console.print(table)
@@ -101,7 +125,11 @@ def _feature_status_from_config(feature: str) -> Optional[bool]:
     try:
         feature_key = _feature_to_config_key(feature)
         value = _config.get(feature_key)
-        return value if isinstance(value, bool) else _coerce_boolean(value)
+
+        if _feature_types[feature] == FeatureType.boolean:
+            return value if isinstance(value, bool) else _coerce_boolean(value)
+        return value
+
     except KeyError:
         return None
 

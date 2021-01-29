@@ -6,6 +6,7 @@ from unittest.mock import patch
 import pytest
 from outcome.utils import feature_set
 from outcome.utils.config import Config
+from outcome.utils.feature_set import FeatureType
 
 valid_feature_names_raw = [
     'feature',
@@ -106,15 +107,21 @@ def test_invalid_registration():
 default_feature = 'default_feature'
 inactive_feature = 'inactive_feature'
 active_feature = 'active_feature'
+bool_feature = 'bool_feature'
+str_feature = 'str_feature'
+empty_str_feature = 'empty_str_feature'
 unknown_feature = 'unknown'
 
 feature_toml = Path(Path(__file__).parent, 'fixtures', 'sample.toml')
 feature_config = Config(feature_toml)
 
 expected_feature_states = [
-    (default_feature, False),
-    (inactive_feature, False),
-    (active_feature, True),
+    (default_feature, False, FeatureType.boolean),
+    (inactive_feature, False, FeatureType.boolean),
+    (active_feature, True, FeatureType.boolean),
+    (bool_feature, True, FeatureType.boolean),
+    (empty_str_feature, None, FeatureType.string),
+    (str_feature, 'str_value', FeatureType.string),
 ]
 
 
@@ -123,6 +130,9 @@ def register_feature():
     feature_set.register_feature(default_feature)
     feature_set.register_feature(inactive_feature, default=False)
     feature_set.register_feature(active_feature, default=True)
+    feature_set.register_feature(bool_feature, default=True, feature_type=FeatureType.boolean)
+    feature_set.register_feature(empty_str_feature, feature_type=FeatureType.string)
+    feature_set.register_feature(str_feature, default='str_value', feature_type=FeatureType.string)
 
 
 @pytest.mark.usefixtures('register_feature')
@@ -131,16 +141,27 @@ def test_duplicate_registration():
         feature_set.register_feature(default_feature)
 
 
+def test_invalid_type_registration():
+    with pytest.raises(feature_set.FeatureException):
+        feature_set.register_feature('invalid_feature', feature_type=list)
+
+
 @patch.dict(os.environ, {}, clear=True)
 @pytest.mark.usefixtures('register_feature')
-@pytest.mark.parametrize('feature,expected', expected_feature_states)
-def test_is_active(feature, expected):
-    assert feature_set.is_active(feature) == expected
+@pytest.mark.parametrize('feature, expected, expected_type', expected_feature_states)
+def test_is_active(feature, expected, expected_type):
+    received = feature_set.is_active(feature)
+    assert received == expected
+    if expected_type == FeatureType.boolean:
+        assert isinstance(received, bool)
+    elif expected_type == FeatureType.string:
+        assert isinstance(received, str) or received is None
 
 
 @pytest.mark.usefixtures('register_feature')
 def test_all_features():
-    assert feature_set.features() == dict(expected_feature_states)
+    expected_features = {feature: expected for feature, expected, _ in expected_feature_states}
+    assert feature_set.features() == expected_features
 
 
 @patch.dict(os.environ, {'APP_ENV': 'dev'}, clear=True)
@@ -161,11 +182,16 @@ def test_unknown_feature_prod():
         assert len(w) == 0
 
 
-@patch.dict(os.environ, {'WITH_FEAT_DEFAULT_FEATURE': '1', 'WITH_FEAT_ACTIVE_FEATURE': '0'}, clear=True)
+@patch.dict(
+    os.environ,
+    {'WITH_FEAT_DEFAULT_FEATURE': '1', 'WITH_FEAT_ACTIVE_FEATURE': '0', 'WITH_FEAT_STR_FEATURE': 'other_str_value'},
+    clear=True,
+)
 @pytest.mark.usefixtures('register_feature')
 def test_is_active_from_env():
     assert feature_set.is_active(default_feature)
     assert not feature_set.is_active(active_feature)
+    assert feature_set.is_active(str_feature) == 'other_str_value'
 
 
 @patch.dict(os.environ, {}, clear=True)
